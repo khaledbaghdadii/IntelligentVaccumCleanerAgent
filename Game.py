@@ -2,10 +2,12 @@ import pygame
 from VacuumCleaner import VacuumCleaner
 import constants
 from Tiles import Tiles
+from Dirt import Dirt, Dirts
 class Game:
     def __init__(self,n,m):
         self.init_pygame()
         self.Tiles=Tiles(n,m)
+        self.Dirts=Dirts(n,m)
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
@@ -20,6 +22,10 @@ class Game:
     def update_classes(self):
         for tile in self.Tiles:
             self.all_sprites.add(tile)
+        for dirt in self.Dirts:
+            if not type(dirt)==int:
+                self.all_sprites.add(dirt)
+                print("dirt")
         self.all_sprites.add(self.VacuumCleaner)
     def draw(self):
         self.screen.fill(self.BG_COLOR)
@@ -35,6 +41,16 @@ class Game:
             if event.type == pygame.QUIT:
                 self.keep_looping = False
                 return True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.keep_looping = False
+            if event.type ==pygame.MOUSEBUTTONDOWN:
+                if pygame.mouse.get_pressed()[0]:
+                    Dirts.addDirt(self.Dirts,mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
+                    for dirt in (self.Dirts.dirts):
+                        print(type(dirt))
+                    self.draw()
+                    # print(pygame.mouse.get_pos())
             
 
     def main(self):
