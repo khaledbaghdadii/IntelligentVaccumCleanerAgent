@@ -23,7 +23,7 @@ class Game:
         for tile in self.Tiles:
             self.all_sprites.add(tile)
         for dirt in self.Dirts:
-            if not type(dirt)==int:
+            if  type(dirt)==Dirt:
                 self.all_sprites.add(dirt)
                 print("dirt")
         self.all_sprites.add(self.VacuumCleaner)
@@ -47,7 +47,7 @@ class Game:
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     Dirts.addDirt(self.Dirts,mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
-                    for dirt in (self.Dirts.dirts):
+                    for dirt in (self.Dirts):
                         print(type(dirt))
                     self.draw()
                     # print(pygame.mouse.get_pos())
