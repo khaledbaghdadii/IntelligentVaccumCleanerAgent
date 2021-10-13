@@ -35,7 +35,7 @@ def draw_map(surface, map_tiles):
                 raise ValueError(s)
             image = pygame.transform.scale(image, (BLOCK_WIDTH, BLOCK_HEIGHT))
             rect = image.get_rect()
-            # rect = rect.move(i*BLOCK_WIDTH, j*BLOCK_HEIGHT,)
+            rect = rect.move(i*BLOCK_WIDTH, j*BLOCK_HEIGHT,)
             # myrect = pygame.Rect(i*BLOCK_WIDTH, j*BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT)
             pygame.draw.rect(surface,(0,0,255), rect,1)
             pygame.display.update()
