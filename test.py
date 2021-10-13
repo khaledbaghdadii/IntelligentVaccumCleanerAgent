@@ -1,7 +1,7 @@
 import pygame, sys
 import os, sys
 import constants
-w, h =40,100
+w, h =5,7
 SCREEN_WIDTH =500
 SCREEN_HEIGHT =500
 
@@ -27,8 +27,18 @@ def draw_map(surface, map_tiles):
     for j, tile in enumerate(map_tiles):
         for i, tile_contents in enumerate(tile):
             # print("{},{}: {}".format(i, j, tile_contents))
-            myrect = pygame.Rect(i*BLOCK_WIDTH, j*BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT)
-            pygame.draw.rect(surface, (0,0,255), myrect,2)
+            filepath="images/tile.png"
+            try:
+                image = pygame.image.load(filepath).convert_alpha()
+            except:
+                s = "Couldn't open: {}".format(filepath)
+                raise ValueError(s)
+            image = pygame.transform.scale(image, (BLOCK_WIDTH, BLOCK_HEIGHT))
+            rect = image.get_rect()
+            # rect = rect.move(i*BLOCK_WIDTH, j*BLOCK_HEIGHT,)
+            # myrect = pygame.Rect(i*BLOCK_WIDTH, j*BLOCK_HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT)
+            pygame.draw.rect(surface,(0,0,255), rect,1)
+            pygame.display.update()
 
 # def draw_grid(surface):
 #     for i in range(w):
