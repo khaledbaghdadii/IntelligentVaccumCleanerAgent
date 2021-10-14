@@ -1,6 +1,6 @@
 import pygame
 import constants
-
+import math
 class Tile(pygame.sprite.Sprite):
     def __init__(self, x, y,TILE_WIDTH,TILE_HEIGT):
         super().__init__()
@@ -25,10 +25,13 @@ class Tile(pygame.sprite.Sprite):
     
     def setIsDirty(self,isDirty):
         self.isDirty=isDirty
+    
 
 
 class Tiles:
     def __init__(self,n,m):
+        self.n=n
+        self.m=m
         self.TILE_WIDTH=(constants.SCREEN_WIDTH)/n
         self.TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
         self.tiles=[[0 for x in range(m)] for y in range(n)]
@@ -41,5 +44,18 @@ class Tiles:
 
     def __getitem__(self, item):
         return self.tiles[item]
+    def addDirt(self,mouse_x,mouse_y):
+        constants.SCREEN_WIDTH
+        constants.SCREEN_HEIGHT
+        x=math.floor(mouse_x/self.TILE_WIDTH)
+        y=math.floor((mouse_y)/self.TILE_HEIGHT)
+        if y<=self.m-1:
+            self.tiles[x][y].setIsDirty(True)
+            # Print statement for debugging (making sure tile state is set to dirty)
+            # for tiles in self.tiles:
+            #     for tile in tiles:
+            #         print(tile.isDirty)
+            print(x)
+            print(y)
 
 
