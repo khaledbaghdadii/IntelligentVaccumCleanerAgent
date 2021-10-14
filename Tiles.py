@@ -11,7 +11,7 @@ class Tile(pygame.sprite.Sprite):
         self.hasWallLeft=False
         self.hasWallRight=False
         self.hasWallUp=False
-        self.hasWallsDown=False
+        self.hasWallDown=False
         self.isDirty=False
         self.filepath = "images/tile.png"
         try:
@@ -22,6 +22,11 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (round(TILE_WIDTH), round(TILE_HEIGT)))
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x * TILE_WIDTH, y * TILE_HEIGT)
+
+    def printTile(self):
+        print("(X,Y) = (" , self.x,",",self.y,")",
+              "R",self.hasWallRight,"L",self.hasWallLeft,"U",self.hasWallUp,"D",self.hasWallDown,
+              "Dirty",self.isDirty)
 
 
 class Tiles:
@@ -34,9 +39,32 @@ class Tiles:
                 # TILE_WIDTH=(constants.SCREEN_WIDTH)/n
                 # TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
                 tile = Tile(i,j,self.TILE_WIDTH,self.TILE_HEIGHT)
+                #leftest border
+                if(i==0):
+                    tile.hasWallLeft=True
+                    if(j==0):
+                        tile.hasWallUp=True
+                    elif (j==m-1):
+                        tile.hasWallDown=True
+                #upper border
+                if(j==0):
+                    tile.hasWallUp=True
+                    if (i==n-1):
+                        tile.hasWallRight=True
+                #right border
+                if(i==n-1):
+                    tile.hasWallRight=True
+                    if (j==m-1):
+                        tile.hasWallDown=True
+                #bottom border
+                if(j==m-1):
+                    tile.hasWallDown=True
+
                 self.tiles[i][j]=tile
 
     def __getitem__(self, item):
         return self.tiles[item]
 
+    # def getTileArray(self):
+    #     return self.tiles
 

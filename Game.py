@@ -3,10 +3,18 @@ from VacuumCleaner import VacuumCleaner
 import constants
 from Tiles import Tiles
 from Dirt import Dirt, Dirts
+from BFS import BFS
 class Game:
     def __init__(self,n,m):
         self.init_pygame()
         self.Tiles=Tiles(n,m)
+
+        #trying bfs
+
+        #consider hala2 x w y hene 1 and 1
+        BFS.clean(self,self.Tiles.tiles,0,0)
+        #end of trial
+
         self.Dirts=Dirts(n,m)
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
         self.all_sprites = pygame.sprite.Group()
@@ -27,6 +35,7 @@ class Game:
                 self.all_sprites.add(dirt)
                 print("dirt")
         self.all_sprites.add(self.VacuumCleaner)
+
     def draw(self):
         self.screen.fill(self.BG_COLOR)
         self.update_classes()
@@ -50,6 +59,7 @@ class Game:
                     for dirt in (self.Dirts):
                         print(type(dirt))
                     self.draw()
+
                     # print(pygame.mouse.get_pos())
             
 
