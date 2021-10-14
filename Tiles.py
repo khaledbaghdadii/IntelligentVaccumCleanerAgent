@@ -22,6 +22,9 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (round(TILE_WIDTH), round(TILE_HEIGT)))
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x * TILE_WIDTH, y * TILE_HEIGT)
+    
+    def setIsDirty(self,isDirty):
+        self.isDirty=isDirty
 
 
 class Tiles:

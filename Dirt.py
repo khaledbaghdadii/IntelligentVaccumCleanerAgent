@@ -2,7 +2,7 @@ import pygame
 import constants
 import math
 class Dirt(pygame.sprite.Sprite):
-    def __init__(self,x,y,TILE_WIDTH,TILE_HEIGHT):
+    def __init__(self,x=0,y=0,TILE_WIDTH=0,TILE_HEIGHT=0):
         super().__init__()
         self.x=x
         self.y=y
@@ -31,7 +31,7 @@ class Dirts:
         self.m=m 
         self.TILE_WIDTH=(constants.SCREEN_WIDTH)/n
         self.TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
-        self.dirts=[[0 for x in range(m)] for y in range(n)]
+        self.dirts=[[Dirt() for x in range(m)] for y in range(n)]
         # for i in range(n):
         #     for j in range(m):
         #         # TILE_WIDTH=(constants.SCREEN_WIDTH)/n

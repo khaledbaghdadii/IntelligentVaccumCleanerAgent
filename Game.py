@@ -22,10 +22,11 @@ class Game:
     def update_classes(self):
         for tile in self.Tiles:
             self.all_sprites.add(tile)
-        for dirt in self.Dirts:
-            if  type(dirt)==Dirt:
-                self.all_sprites.add(dirt)
-                print("dirt")
+            # print(type(tile))
+        for dirt in self.Dirts :
+            self.all_sprites.add(dirt)
+        self.VacuumCleaner.kill()
+                # print("dirt")
         self.all_sprites.add(self.VacuumCleaner)
     def draw(self):
         self.screen.fill(self.BG_COLOR)
@@ -46,10 +47,12 @@ class Game:
                     self.keep_looping = False
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    Dirts.addDirt(self.Dirts,mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
-                    for dirt in (self.Dirts):
-                        print(type(dirt))
-                    self.draw()
+                    self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
+                    # for dirt in self.Dirts:
+                    #     for a in dirt:
+                    #         print(type(a))
+                    print(self.Dirts)
+                    #self.draw()
                     # print(pygame.mouse.get_pos())
             
 
