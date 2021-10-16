@@ -42,12 +42,12 @@ class Dirts:
     def __getitem__(self, item):
         return self.dirts[item]
 
-    def addDirt(self,mouse_x,mouse_y):
+    def addDirt(self,mouse_x,mouse_y,check):
         constants.SCREEN_WIDTH
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        if y<=self.m -1:
+        if y<=self.m -1 and check:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
             print(x)

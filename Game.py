@@ -1,5 +1,6 @@
 import pygame
 from VacuumCleaner import VacuumCleaner
+from Wall import Walls
 import constants
 from Tiles import Tiles
 from Dirt import Dirt, Dirts
@@ -8,6 +9,7 @@ class Game:
         self.init_pygame()
         self.Tiles=Tiles(n,m)
         self.Dirts=Dirts(n,m)
+        self.Walls = Walls(n,m)
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
@@ -26,6 +28,8 @@ class Game:
         for dirt in self.Dirts :
             self.all_sprites.add(dirt)
         self.VacuumCleaner.kill()
+        for wall in self.Walls:
+            self.all_sprites.add(wall)
                 # print("dirt")
         self.all_sprites.add(self.VacuumCleaner)
     def draw(self):
@@ -47,13 +51,14 @@ class Game:
                     self.keep_looping = False
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
-                    self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1])
+                    self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=False)
+                    self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=False)
+                    self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
                     # for dirt in self.Dirts:
                     #     for a in dirt:
                     #         print(type(a))
-                    print(self.Dirts)
-                    #self.draw()
+                    # print(self.Dirts)
+                    self.draw()
                     # print(pygame.mouse.get_pos())
             
 
