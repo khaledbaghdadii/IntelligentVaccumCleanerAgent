@@ -30,6 +30,14 @@ class Tile(pygame.sprite.Sprite):
 
     def hasWalls(self):
         return self.has_walls_left or self.has_walls_right or self.has_walls_down or self.has_walls_up
+    def hasWallLeft(self):
+        return self.has_walls_left
+    def hasWallRight(self):
+        return self.has_walls_right
+    def hasWallUp(self):
+        return self.has_walls_up
+    def hasWallDown(self):
+        return self.has_walls_down
     
 
 
@@ -46,6 +54,26 @@ class Tiles:
                 # TILE_WIDTH=(constants.SCREEN_WIDTH)/n
                 # TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
                 tile = Tile(i,j,self.TILE_WIDTH,self.TILE_HEIGHT)
+                #leftest border
+                if(i==0):
+                    tile.has_walls_left=True
+                    if(j==0):
+                        tile.has_walls_up=True
+                    elif (j==m-1):
+                        tile.has_walls_down=True
+                #upper border
+                if(j==0):
+                    tile.has_walls_up=True
+                    if (i==n-1):
+                        tile.has_walls_right=True
+                #right border
+                if(i==n-1):
+                    tile.has_walls_right=True
+                    if (j==m-1):
+                        tile.has_walls_down=True
+                #bottom border
+                if(j==m-1):
+                    tile.has_walls_down=True
                 self.tiles[i][j]=tile
 
     def __getitem__(self, item):

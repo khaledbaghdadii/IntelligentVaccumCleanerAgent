@@ -18,9 +18,8 @@ class VacuumCleaner(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(self.x * self.TILE_WIDTH, self.y * self.TILE_HEIGHT)
 
-    def move(self, dx=0, dy=0, walls=None):
-        if not self._collide_with_walls(dx, dy, walls):
+    def move(self, dx=0, dy=0):
             self.x += dx
             self.y += dy
             self.rect = self.rect.move(dx * self.TILE_WIDTH, dy * self.TILE_HEIGHT)
-            # print("Player has moved. x,y: {},{}; dx={}, dy={}".format(self.x, self.y, dx, dy))
+    
