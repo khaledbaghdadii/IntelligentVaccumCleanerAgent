@@ -4,6 +4,8 @@ from Wall import Walls
 import constants
 from Tiles import Tiles
 from Dirt import Dirt, Dirts
+from BFS import BFS
+from time import sleep
 class Game:
     def __init__(self,n,m):
         self.init_pygame()
@@ -49,6 +51,10 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.keep_looping = False
+                elif event.key ==pygame.K_RETURN:
+                    self.clean(0,0,self.Tiles.tiles)
+
+                    
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
@@ -61,7 +67,28 @@ class Game:
                     # print(self.Dirts)
                     self.draw()
                     # print(pygame.mouse.get_pos())
-            
+    def clean(self,x,y,tiles):
+        bfs=BFS(tiles)
+        bfs.clean(x,y)
+        dirtsArray= bfs.getDirts()
+        for i in bfs.path:
+            if(len(i)!=0):
+                previousTile=i[0]
+                if(len(i)>1):
+                    for tile in i[1:]:
+                        dx=tile.x-previousTile.x
+                        dy=tile.y-previousTile.y
+                        currentTile=(tile.x,tile.y)
+                        if(currentTile in dirtsArray):
+                            self.Dirts.dirts[tile.x][tile.y].kill()
+                            self.Dirts.dirts[tile.x][tile.y]=Dirt()
+                        #call move vacuum cleaner method
+                        self.VacuumCleaner.move(dx,dy)
+                        
+                        self.draw()
+                        sleep(0.5)
+                        previousTile=tile
+
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)

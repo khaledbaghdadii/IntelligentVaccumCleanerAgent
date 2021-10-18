@@ -78,6 +78,9 @@ class Tiles:
 
     def __getitem__(self, item):
         return self.tiles[item]
+    def getTiles(self):
+        return self.tiles
+    
     def addDirt(self,mouse_x,mouse_y,check):
         constants.SCREEN_WIDTH
         constants.SCREEN_HEIGHT

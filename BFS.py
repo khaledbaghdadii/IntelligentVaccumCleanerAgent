@@ -1,9 +1,11 @@
+
 class BFS:
     prev=[[]]
     path=[[]]
 
     def __init__(self,tilesArray):
         self.tilesArray=tilesArray
+        self.dirtsArray=[]
 
     def clean(self,agentX,agentY):
         frontier = []
@@ -24,6 +26,8 @@ class BFS:
                     self.prev[tile.x][tile.y]=currentTile
                     if (tile.isDirty):
                         self.tilesArray[tile.x][tile.y].isDirty=False
+                        self.dirtsArray.append((tile.x,tile.y))
+                        
                         self.path.append(self.backtrack(tile))
                         return self.clean(tile.x,tile.y)
 
@@ -40,7 +44,8 @@ class BFS:
 
         return path
 
-
+    def getDirts(self):
+        return self.dirtsArray
     def getNeighbours(self,currentTile,tilesArray):
         neighbours = []
         if(not currentTile.hasWallLeft()):
