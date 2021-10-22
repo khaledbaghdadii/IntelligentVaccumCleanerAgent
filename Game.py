@@ -1,4 +1,6 @@
 import pygame
+from pygame import color
+from Checkbox import Checkbox
 from VacuumCleaner import VacuumCleaner
 from Wall import Walls
 import constants
@@ -15,6 +17,9 @@ class Game:
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
+        self.dirt_checkbox= Checkbox(self.screen,50,520,1,caption="Dirt")
+        self.wall_checkbox= Checkbox(self.screen,150,520,1,caption="Wall")
+        
     
     def init_pygame(self):
         pygame.init()
@@ -23,6 +28,7 @@ class Game:
         pygame.display.set_caption("Enter {}".format(constants.TITLE))
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
         self.font = pygame.font.Font(None, 40)
+       
     def update_classes(self):
         for tile in self.Tiles:
             self.all_sprites.add(tile)
@@ -40,8 +46,13 @@ class Game:
         # ----
         self.all_sprites.update()
         self.all_sprites.draw(self.screen)
+        
+        self.dirt_checkbox.render_checkbox()
+        self.wall_checkbox.render_checkbox()
         # ----
         pygame.display.flip()
+
+
     def handle_events(self):
         
         for event in pygame.event.get():
@@ -54,13 +65,14 @@ class Game:
                 elif event.key ==pygame.K_RETURN:
                     self.clean(0,0,self.Tiles.tiles)
 
-                    
+            self.dirt_checkbox.update_checkbox(event)
+            self.wall_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
-                    self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
-                    self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
-                    self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=True)
+                    self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
+                    self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
+                    self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
+                    self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     # for dirt in self.Dirts:
                     #     for a in dirt:
                     #         print(type(a))
