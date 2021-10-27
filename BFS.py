@@ -12,7 +12,7 @@ class BFS:
 
     def clean(self,agentX,agentY):
         frontier = []
-
+        # self.dirtsArray.append((agentX,agentY))
         # explored list covers all the tiles in the grid as booleans
         explored = [[False for x in range(len(self.tilesArray[0]))] for y in range(len(self.tilesArray))]
         currentTile = self.tilesArray[agentX][agentY]
@@ -20,6 +20,10 @@ class BFS:
         frontier.append(currentTile)
         while len(frontier) != 0:
             currentTile = frontier.pop(0) #popping the first tile
+            if currentTile.isDirty:
+                self.tilesArray[currentTile.x][currentTile.y].isDirty=False
+                self.dirtsArray.append((currentTile.x,currentTile.y))
+                print("added")
             explored[currentTile.x][currentTile.y] = True
             neighbors = self.getNeighbours(currentTile,self.tilesArray)
             for tile in neighbors:

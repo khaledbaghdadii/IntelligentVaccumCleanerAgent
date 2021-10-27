@@ -86,6 +86,10 @@ class Game:
         for i in bfs.path:
             if(len(i)!=0):
                 previousTile=i[0]
+                if (previousTile.x,previousTile.y) in dirtsArray:
+                    self.Dirts.dirts[previousTile.x][previousTile.y].kill()
+                    self.Dirts.dirts[previousTile.x][previousTile.y]=Dirt()
+
                 if(len(i)>1):
                     for tile in i[1:]:
                         dx=tile.x-previousTile.x
