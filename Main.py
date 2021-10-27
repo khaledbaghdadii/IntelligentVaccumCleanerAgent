@@ -2,7 +2,7 @@ from Game import Game
 from BFS import BFS
 from time import sleep
 def main():
-    mygame = Game(7,7)
+    mygame = Game(6,7)
     # mygame.read_data()
     mygame.main()
 

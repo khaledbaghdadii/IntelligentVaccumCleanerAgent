@@ -105,13 +105,13 @@ class Tiles:
         #     wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
 
         if y<=self.m -1 and check:
-            if mouse_x/self.TILE_WIDTH >= x+7/8 and mouse_x/self.TILE_WIDTH<=x+1:
+            if mouse_x/self.TILE_WIDTH >= x+7/8 and mouse_x/self.TILE_WIDTH<=x+1 and x+1<len(self.tiles):
                 self.tiles[x][y].has_walls_right=True
                 self.tiles[x+1][y].has_walls_left=True
             elif mouse_x/self.TILE_WIDTH >= x and mouse_x/self.TILE_WIDTH<=x+1/8:
                 self.tiles[x][y].has_walls_left=True
                 self.tiles[x-1][y].has_walls_right=True
-            elif mouse_y/self.TILE_HEIGHT >= y+ 7/8 and mouse_y/self.TILE_HEIGHT<=y+1:
+            elif mouse_y/self.TILE_HEIGHT >= y+ 7/8 and mouse_y/self.TILE_HEIGHT<=y+1 and y+1<len(self.tiles[x]):
                 self.tiles[x][y].has_walls_down=True
                 self.tiles[x][y+1].has_walls_up=True
             elif mouse_y/self.TILE_HEIGHT >= y and mouse_y/self.TILE_HEIGHT<=y+1/8:

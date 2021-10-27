@@ -6,6 +6,9 @@ class BFS:
     def __init__(self,tilesArray):
         self.tilesArray=tilesArray
         self.dirtsArray=[]
+        self.prev=[[]]
+        self.path=[[]]
+        
 
     def clean(self,agentX,agentY):
         frontier = []

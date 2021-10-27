@@ -18,7 +18,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
         self.dirt_checkbox= Checkbox(self.screen,50,520,1,caption="Dirt")
-        self.wall_checkbox= Checkbox(self.screen,150,520,1,caption="Wall")
+        self.wall_checkbox= Checkbox(self.screen,150,520,2,caption="Wall")
         
     
     def init_pygame(self):
@@ -81,7 +81,7 @@ class Game:
                     # print(pygame.mouse.get_pos())
     def clean(self,x,y,tiles):
         bfs=BFS(tiles)
-        bfs.clean(x,y)
+        bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
         dirtsArray= bfs.getDirts()
         for i in bfs.path:
             if(len(i)!=0):
