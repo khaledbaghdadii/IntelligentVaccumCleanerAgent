@@ -83,12 +83,17 @@ class Game:
         bfs=BFS(tiles)
         bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
         dirtsArray= bfs.getDirts()
+        if (self.VacuumCleaner.x,self.VacuumCleaner.y) in dirtsArray:
+            self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y].kill()
+            self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y]=Dirt()
+
         for i in bfs.path:
             if(len(i)!=0):
                 previousTile=i[0]
                 if (previousTile.x,previousTile.y) in dirtsArray:
                     self.Dirts.dirts[previousTile.x][previousTile.y].kill()
                     self.Dirts.dirts[previousTile.x][previousTile.y]=Dirt()
+                    
 
                 if(len(i)>1):
                     for tile in i[1:]:
