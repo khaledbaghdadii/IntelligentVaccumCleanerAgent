@@ -30,6 +30,7 @@ class Game:
         self.rnd_btn= Button("Generate Random",(150,600),font=20)
         self.grid_btn= Button("Generate Grid",(300,600),font=20)
         self.input_txt=InputBox(50,650,80,30)
+        self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
         
     
     def init_pygame(self):
@@ -80,10 +81,16 @@ class Game:
                     self.keep_looping = False
                 elif event.key ==pygame.K_SPACE:
                     self.clean(0,0,self.Tiles.tiles)
+            for box in self.checkboxes:
+                    box.update_checkbox(event)
+                    if box.checked is True:
+                        for b in self.checkboxes:
+                            if b != box:
+                                b.checked = False
             self.input_txt.handle_event(event)
-            self.dirt_checkbox.update_checkbox(event)
-            self.wall_checkbox.update_checkbox(event)
-            self.agent_checkbox.update_checkbox(event)
+            # self.dirt_checkbox.update_checkbox(event)
+            # self.wall_checkbox.update_checkbox(event)
+            # self.agent_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
@@ -138,6 +145,7 @@ class Game:
     def randomDirts(self,tiles):
         self.Tiles=Tiles(self.n,self.m)
         self.Dirts=Dirts(self.n,self.m)
+        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
         for i in tiles:
             for j in i:
                 random_dirt=rnd.getrandbits(3)

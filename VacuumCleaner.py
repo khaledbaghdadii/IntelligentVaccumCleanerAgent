@@ -26,10 +26,11 @@ class VacuumCleaner(pygame.sprite.Sprite):
     
     
     def addAgent(self,mouse_x,mouse_y,check,n,m):
-
+        constants.SCREEN_WIDTH
+        constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
         if y<=m -1 and check :
-            self.rect=self.rect.move(x*self.TILE_WIDTH,y*self.TILE_WIDTH)
+            self.__init__(self.TILE_WIDTH,self.TILE_HEIGHT,x,y)
             
     
