@@ -1,15 +1,21 @@
 import pygame
+import random as rnd
 from pygame import color
 from Checkbox import Checkbox
+from InputText import InputBox
 from VacuumCleaner import VacuumCleaner
 from Wall import Walls
 import constants
-from Tiles import Tiles
+from Tiles import Tile, Tiles
 from Dirt import Dirt, Dirts
 from BFS import BFS
 from time import sleep
+from Button import Button
+
 class Game:
     def __init__(self,n,m):
+        self.n=n
+        self.m=m
         self.init_pygame()
         self.Tiles=Tiles(n,m)
         self.Dirts=Dirts(n,m)
@@ -19,6 +25,11 @@ class Game:
         self.keep_looping=True
         self.dirt_checkbox= Checkbox(self.screen,50,520,1,caption="Dirt")
         self.wall_checkbox= Checkbox(self.screen,150,520,2,caption="Wall")
+        self.agent_checkbox= Checkbox(self.screen,250,520,2,caption="Place Agent")
+        self.reset_btn= Button("Reset",(50,600),font=20)
+        self.rnd_btn= Button("Generate Random",(150,600),font=20)
+        self.grid_btn= Button("Generate Grid",(300,600),font=20)
+        self.input_txt=InputBox(50,650,80,30)
         
     
     def init_pygame(self):
@@ -49,6 +60,11 @@ class Game:
         
         self.dirt_checkbox.render_checkbox()
         self.wall_checkbox.render_checkbox()
+        self.agent_checkbox.render_checkbox()
+        self.screen.blit(self.reset_btn.surface, (self.reset_btn.x, self.reset_btn.y))
+        self.screen.blit(self.rnd_btn.surface, (self.rnd_btn.x, self.rnd_btn.y))
+        self.screen.blit(self.grid_btn.surface, (self.grid_btn.x, self.grid_btn.y))
+        self.input_txt.draw(self.screen)
         # ----
         pygame.display.flip()
 
@@ -62,17 +78,27 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.keep_looping = False
-                elif event.key ==pygame.K_RETURN:
+                elif event.key ==pygame.K_SPACE:
                     self.clean(0,0,self.Tiles.tiles)
-
+            self.input_txt.handle_event(event)
             self.dirt_checkbox.update_checkbox(event)
             self.wall_checkbox.update_checkbox(event)
+            self.agent_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
+                    x=pygame.mouse.get_pos()[0]
+                    y=pygame.mouse.get_pos()[1]
                     self.Dirts.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
                     self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
                     self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
+                    self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
+                    if self.reset_btn.rect.collidepoint(x,y):
+                        self.__init__(self.n,self.m)
+                    if self.rnd_btn.rect.collidepoint(x,y):
+                        self.randomDirts(self.Tiles.tiles)
+                    if self.grid_btn.rect.collidepoint(x,y):
+                        self.generateGrid()
                     # for dirt in self.Dirts:
                     #     for a in dirt:
                     #         print(type(a))
@@ -109,6 +135,25 @@ class Game:
                         self.draw()
                         sleep(0.5)
                         previousTile=tile
+    def randomDirts(self,tiles):
+        self.Tiles=Tiles(self.n,self.m)
+        self.Dirts=Dirts(self.n,self.m)
+        for i in tiles:
+            for j in i:
+                random_dirt=rnd.getrandbits(3)
+                if random_dirt==1:
+                    j.isDirty=True
+                    # print(j.x)
+                    self.Dirts.addDirtXY(j.x,j.y,True)
+                    self.Tiles.addDirtXY(j.x,j.y,True)
+                else:
+                    j.isDirty=False
+    def generateGrid(self):
+        size=self.input_txt.text.split(",")
+        n=int(size[0])
+        m=int(size[1])
+        self.__init__(n,m)
+                
 
 
     def main(self):

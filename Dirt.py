@@ -50,8 +50,13 @@ class Dirts:
         if y<=self.m -1 and check and self.dirts[x][y].TILE_HEIGHT==0:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
+    def addDirtXY(self,x,y,check):
+        if y<=self.m -1 and check and self.dirts[x][y].TILE_HEIGHT==0:
+            dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
+            self.dirts[x][y]=dirt
+
 
 
         

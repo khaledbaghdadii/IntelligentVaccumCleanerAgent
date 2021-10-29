@@ -92,15 +92,18 @@ class Tiles:
             # for tiles in self.tiles:
             #     for tile in tiles:
             #         print(tile.isDirty)
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
+    def addDirtXY(self,x,y,check):
+        if y<=self.m-1 and check:
+            self.tiles[x][y].setIsDirty(True)
     def addWall(self,mouse_x,mouse_y,check):
         constants.SCREEN_WIDTH
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        print(mouse_x/self.TILE_WIDTH)
-        print(mouse_y/self.TILE_HEIGHT)
+        # print(mouse_x/self.TILE_WIDTH)
+        # print(mouse_y/self.TILE_HEIGHT)
         # if mouse_x/self.TILE_HEIGHT > x+ self.TILE_HEIGHT*7/8:
         #     wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
 

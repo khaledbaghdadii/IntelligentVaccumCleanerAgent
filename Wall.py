@@ -36,8 +36,8 @@ class Walls():
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        print(mouse_x/self.TILE_WIDTH)
-        print(mouse_y/self.TILE_HEIGHT)
+        # print(mouse_x/self.TILE_WIDTH)
+        # print(mouse_y/self.TILE_HEIGHT)
         # if mouse_x/self.TILE_HEIGHT > x+ self.TILE_HEIGHT*7/8:
         #     wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
 

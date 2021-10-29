@@ -1,10 +1,11 @@
 import pygame
-
+import constants
+import math
 class VacuumCleaner(pygame.sprite.Sprite):
-    def __init__(self,TILE_WIDTH,TILE_HEIGHT):
+    def __init__(self,TILE_WIDTH,TILE_HEIGHT,x=0,y=0):
         super().__init__()
-        self.x=0
-        self.y=0
+        self.x=x
+        self.y=y
         self.TILE_WIDTH= TILE_WIDTH
         self.TILE_HEIGHT= TILE_HEIGHT
         self.filepath = "images/vacuum.png"
@@ -22,4 +23,13 @@ class VacuumCleaner(pygame.sprite.Sprite):
             self.x += dx
             self.y += dy
             self.rect = self.rect.move(dx * self.TILE_WIDTH, dy * self.TILE_HEIGHT)
+    
+    
+    def addAgent(self,mouse_x,mouse_y,check,n,m):
+
+        x=math.floor(mouse_x/self.TILE_WIDTH)
+        y=math.floor((mouse_y)/self.TILE_HEIGHT)
+        if y<=m -1 and check :
+            self.rect=self.rect.move(x*self.TILE_WIDTH,y*self.TILE_WIDTH)
+            
     
