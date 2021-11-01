@@ -38,6 +38,13 @@ class Tile(pygame.sprite.Sprite):
         return self.has_walls_up
     def hasWallDown(self):
         return self.has_walls_down
+    def clearWalls(self):
+        self.has_walls_down=False
+        self.has_walls_left=False
+        self.has_walls_right=False
+        self.has_walls_up=False
+        self.has_walls=False
+    
     
 
 
@@ -121,5 +128,52 @@ class Tiles:
                 self.tiles[x][y].has_walls_up=True
                 self.tiles[x][y-1].has_walls_down=True
         pass
+    def addWallXY(self,x,y,check,direction):
+        if y<=self.m-1 and check:
+            if direction=="right" and x+1<len(self.tiles):
+                self.tiles[x][y].has_walls_right=True
+                self.tiles[x+1][y].has_walls_left=True
+            elif direction=="left":
+                self.tiles[x][y].has_walls_left=True
+                self.tiles[x-1][y].has_walls_right=True
+            elif direction=="down" and y+1<len(self.tiles[x]):
+                self.tiles[x][y].has_walls_down=True
+                self.tiles[x][y+1].has_walls_up=True
+            elif direction=="up":
+                self.tiles[x][y].has_walls_up=True
+                self.tiles[x][y-1].has_walls_down=True
+        pass
+    def clearWalls(self):
+        n=len(self.tiles)
+        m=len(self.tiles[0])
+        for i,tiles in enumerate(self.tiles):
+            for j,tile in enumerate(tiles):
+                print("(",tile.x,",",tile.y,")")
+                tile.clearWalls()
+                #leftest border
+                if(tile.x==0):
+                    tile.has_walls_left=True
+                    if(tile.y==0):
+                        tile.has_walls_up=True
+                    elif (tile.y==m-1):
+                        tile.has_walls_down=True
+                #upper border
+                if(tile.y==0):
+                    tile.has_walls_up=True
+                    if (tile.x==n-1):
+                        tile.has_walls_right=True
+                #right border
+                if(tile.x==n-1):
+                    tile.has_walls_right=True
+                    if (tile.y==m-1):
+                        tile.has_walls_down=True
+                #bottom border
+                if(tile.y==m-1):
+                    tile.has_walls_down=True
+                print(tile.has_walls_left)
 
+    def clearDirts(self):
+        for tiles in self.tiles:
+            for tile in tiles:
+                tile.isDirty=False
 

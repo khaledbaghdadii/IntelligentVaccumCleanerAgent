@@ -56,6 +56,8 @@ class Dirts:
         if y<=self.m -1 and check and self.dirts[x][y].TILE_HEIGHT==0:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
+    def clearDirts(self):
+        self.dirts=[[Dirt() for x in range(self.m)] for y in range(self.n)]
 
 
 
