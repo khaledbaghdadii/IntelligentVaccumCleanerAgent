@@ -3,6 +3,7 @@ import random as rnd
 from pygame import color
 from pygame import font
 from Checkbox import Checkbox
+from DropDown import DropDown
 from InputText import InputBox
 from VacuumCleaner import VacuumCleaner
 from Wall import Walls
@@ -31,10 +32,11 @@ class Game:
         self.rnd_dirts_btn= Button("Random Dirts",(150,600),font=20)
         self.grid_btn= Button("Generate Grid",(300,600),font=20)
         self.rnd_walls_btn=Button("Random Walls",(450,600),font=20)
-
+        self.dropdown=DropDown(500, 510, 160, 30,  "Select Speed", ["Slow", "Medium","Fast"])
         self.input_txt=InputBox(50,650,80,30)
         self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
         self.initialized=False
+        self.WAIT_TIME=0.5
     def init_pygame(self):
         pygame.init()
         self.BG_COLOR = constants.BG_COLOR
@@ -80,6 +82,7 @@ class Game:
         self.input_txt.draw(self.screen)
         self.all_sprites.update()
         self.all_sprites.draw(self.screen)
+        self.dropdown.draw(self.screen)
         # ----
         pygame.display.flip()
 
@@ -94,7 +97,7 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.keep_looping = False
                 elif event.key ==pygame.K_SPACE:
-                    
+                    self.setSpeed()
                     self.clean(0,0,self.Tiles.tiles)
                 
             for box in self.checkboxes:
@@ -108,6 +111,7 @@ class Game:
             # self.wall_checkbox.update_checkbox(event)
             # self.agent_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
+                self.dropdown.update(event)
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
                     y=pygame.mouse.get_pos()[1]
@@ -160,7 +164,7 @@ class Game:
                         self.VacuumCleaner.move(dx,dy)
                         
                         self.draw()
-                        sleep(0.5)
+                        sleep(self.WAIT_TIME)
                         previousTile=tile
     def randomDirts(self,tiles):
         # self.Tiles=Tiles(self.n,self.m)
@@ -225,7 +229,13 @@ class Game:
                     self.Tiles.addWallXY(j.x,j.y,True,"left")
         self.draw()
                 
-
+    def setSpeed(self):
+        if self.dropdown.main=="Slow":
+            self.WAIT_TIME=0.5
+        elif self.dropdown.main=="Medium":
+            self.WAIT_TIME=0.2
+        elif self.dropdown.main=="Fast":
+            self.WAIT_TIME=0.05
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)
