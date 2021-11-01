@@ -119,10 +119,12 @@ class Game:
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.__init__(self.n,self.m)
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
+                        self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
                     if self.grid_btn.rect.collidepoint(x,y):
                         self.generateGrid()
                     if self.rnd_walls_btn.rect.collidepoint(x,y):
+                        self.killVacuumCleaner()
                         self.randomWalls()
                     # for dirt in self.Dirts:
                     #     for a in dirt:
@@ -194,7 +196,7 @@ class Game:
         # self.Tiles=Tiles(self.n,self.m)
         # self.Walls=Walls(self.n,self.m)
         self.killWalls()
-        self.VacuumCleaner.kill()
+        self.killVacuumCleaner()
         self.Tiles.clearWalls()
         self.Walls.clearWalls()
         print(self.Walls.walls)
