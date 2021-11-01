@@ -39,6 +39,7 @@ class Tile(pygame.sprite.Sprite):
     def hasWallDown(self):
         return self.has_walls_down
     
+    
 
 
 
@@ -121,5 +122,19 @@ class Tiles:
                 self.tiles[x][y].has_walls_up=True
                 self.tiles[x][y-1].has_walls_down=True
         pass
-
+    def addWallXY(self,x,y,check,direction):
+        if y<=self.m-1 and check:
+            if direction=="right" and x+1<len(self.tiles):
+                self.tiles[x][y].has_walls_right=True
+                self.tiles[x+1][y].has_walls_left=True
+            elif direction=="left":
+                self.tiles[x][y].has_walls_left=True
+                self.tiles[x-1][y].has_walls_right=True
+            elif direction=="down" and y+1<len(self.tiles[x]):
+                self.tiles[x][y].has_walls_down=True
+                self.tiles[x][y+1].has_walls_up=True
+            elif direction=="up":
+                self.tiles[x][y].has_walls_up=True
+                self.tiles[x][y-1].has_walls_down=True
+        pass
 

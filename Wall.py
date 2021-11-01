@@ -62,7 +62,28 @@ class Walls():
                 wall1=Wall(x,y-1,"down",self.TILE_WIDTH,self.TILE_HEIGHT)
                 self.walls.append(wall)
                 self.walls.append(wall1)
-
+    def addWallXY(self,x,y,check,direction):
+        if y<=self.m -1 and check:
+            if direction=="right":
+                wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
+                wall1=Wall(x+1,y,"left",self.TILE_WIDTH,self.TILE_HEIGHT)
+                self.walls.append(wall)
+                self.walls.append(wall1)
+            elif direction=="left":
+                wall=Wall(x,y,"left",self.TILE_WIDTH,self.TILE_HEIGHT)
+                wall1=Wall(x-1,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
+                self.walls.append(wall)
+                self.walls.append(wall1)
+            elif direction=="down":
+                wall=Wall(x,y,"down",self.TILE_WIDTH,self.TILE_HEIGHT)
+                wall1=Wall(x,y+1,"up",self.TILE_WIDTH,self.TILE_HEIGHT)
+                self.walls.append(wall)
+                self.walls.append(wall1)
+            elif direction=="up":
+                wall=Wall(x,y,"up",self.TILE_WIDTH,self.TILE_HEIGHT)
+                wall1=Wall(x,y-1,"down",self.TILE_WIDTH,self.TILE_HEIGHT)
+                self.walls.append(wall)
+                self.walls.append(wall1)
 
             # dirt = Wall(x,y,position,self.TILE_WIDTH,self.TILE_HEIGHT)
             # self.dirts[x][y]=dirt
