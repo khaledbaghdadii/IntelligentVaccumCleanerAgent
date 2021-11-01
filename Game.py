@@ -47,14 +47,23 @@ class Game:
         for tile in self.Tiles:
             self.all_sprites.add(tile)
             # print(type(tile))
-        for dirt in self.Dirts :
+        for dirt in self.Dirts.dirts :
             self.all_sprites.add(dirt)
         
-        for wall in self.Walls:
+        for wall in self.Walls.walls:
             self.all_sprites.add(wall)
                 # print("dirt")
         self.VacuumCleaner.kill()
         self.all_sprites.add(self.VacuumCleaner)
+    def killWalls(self):
+        for wall in self.Walls.walls:
+            wall.kill()
+    def killDirts(self):
+        for dirtss in self.Dirts.dirts:
+            for dirt in dirtss:
+                dirt.kill()
+    def killVacuumCleaner(self):
+        self.VacuumCleaner.kill()
     def draw(self):
         self.screen.fill(self.BG_COLOR)
         self.update_classes()
@@ -152,9 +161,14 @@ class Game:
                         sleep(0.5)
                         previousTile=tile
     def randomDirts(self,tiles):
-        self.Tiles=Tiles(self.n,self.m)
-        self.Dirts=Dirts(self.n,self.m)
+        # self.Tiles=Tiles(self.n,self.m)
+        # self.Dirts=Dirts(self.n,self.m)
+        self.killDirts()
+        self.killVacuumCleaner()
+        self.Tiles.clearDirts()
+        self.Dirts.clearDirts()
         self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
+        
         for i in tiles:
             for j in i:
                 random_dirt=rnd.getrandbits(3)
@@ -165,6 +179,7 @@ class Game:
                     self.Tiles.addDirtXY(j.x,j.y,True)
                 else:
                     j.isDirty=False
+        self.draw()
     def generateGrid(self):
         try:
             size=self.input_txt.text.split(",")
@@ -176,8 +191,13 @@ class Game:
             self.input_txt.draw(self.screen)
     def randomWalls(self):
         tiles=self.Tiles.tiles
-        self.Tiles=Tiles(self.n,self.m)
-        self.Walls=Walls(self.n,self.m)
+        # self.Tiles=Tiles(self.n,self.m)
+        # self.Walls=Walls(self.n,self.m)
+        self.killWalls()
+        self.VacuumCleaner.kill()
+        self.Tiles.clearWalls()
+        self.Walls.clearWalls()
+        print(self.Walls.walls)
         self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
         for i in tiles:
             for j in i:
@@ -201,6 +221,7 @@ class Game:
                     j.has_walls_left=True
                     self.Walls.addWallXY(j.x,j.y,True,"left")
                     self.Tiles.addWallXY(j.x,j.y,True,"left")
+        self.draw()
                 
 
 

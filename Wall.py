@@ -84,6 +84,10 @@ class Walls():
                 wall1=Wall(x,y-1,"down",self.TILE_WIDTH,self.TILE_HEIGHT)
                 self.walls.append(wall)
                 self.walls.append(wall1)
+    def clearWalls(self):
+        self.walls=[]
+        
+
 
             # dirt = Wall(x,y,position,self.TILE_WIDTH,self.TILE_HEIGHT)
             # self.dirts[x][y]=dirt
