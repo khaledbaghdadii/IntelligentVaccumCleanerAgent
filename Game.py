@@ -210,6 +210,8 @@ class Game:
             size=self.input_txt.text.split(",")
             n=int(size[0])
             m=int(size[1])
+            if n==0 or m==0:
+                raise Exception('Invalid Number')
             self.n=n
             self.m=m
             self.clearDirts()
@@ -221,7 +223,7 @@ class Game:
             self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
             self.draw()
         except:
-            self.input_txt=InputBox(50,650,80,30)
+            self.input_txt=InputBox(200,650,80,30)
             self.input_txt.draw(self.screen)
     def resetGrid(self):
             self.Tiles=Tiles(self.n,self.m)
@@ -247,7 +249,7 @@ class Game:
                 elif random_dirt==1:
                     j.has_walls_down=True
                     self.Walls.addWallXY(j.x,j.y,True,"down")
-                    print(j.x,j.y)
+                    # print(j.x,j.y)
                     self.Tiles.addWallXY(j.x,j.y,True,"down")
                 elif random_dirt==2:
                     j.has_walls_right=True
@@ -280,7 +282,7 @@ class Game:
         self.killVacuumCleaner()
         self.Tiles.clearWalls()
         self.Walls.clearWalls()
-        print(self.Walls.walls)
+        # print(self.Walls.walls)
         self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
         
 
