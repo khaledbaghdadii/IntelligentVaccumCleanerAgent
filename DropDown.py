@@ -6,7 +6,7 @@ COLOR_LIST_ACTIVE = (255, 150, 150)
 class DropDown:
     
     
-    def __init__(self, x, y, w, h,  main, options,color_menu=[COLOR_INACTIVE,COLOR_ACTIVE], color_option=[COLOR_LIST_INACTIVE,COLOR_LIST_ACTIVE],font=pg.font.SysFont(None, 30),):
+    def __init__(self, x, y, w, h,  main, options,color_menu=[COLOR_INACTIVE,COLOR_ACTIVE], color_option=[COLOR_LIST_INACTIVE,COLOR_LIST_ACTIVE],font=pg.font.SysFont(None, 25),):
         self.color_menu = color_menu
         self.color_option = color_option
         self.rect = pg.Rect(x, y, w, h)

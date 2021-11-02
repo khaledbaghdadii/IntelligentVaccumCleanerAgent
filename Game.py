@@ -34,7 +34,7 @@ class Game:
         self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
         self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
         self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(500, 510, 160, 30,  "Select Speed", ["Slow", "Medium","Fast","Very Fast"])
+        self.dropdown=DropDown(500, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast"])
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
@@ -111,6 +111,7 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.keep_looping = False
                 elif event.key ==pygame.K_SPACE:
+                    self.killVacuumCleaner()
                     self.setSpeed()
                     self.clean(0,0,self.Tiles.tiles)
                 
@@ -133,7 +134,9 @@ class Game:
                     self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
                     self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
-                    self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
+                    if(self.agent_checkbox):
+                        self.killVacuumCleaner()
+                        self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
@@ -224,6 +227,8 @@ class Game:
             self.Tiles=Tiles(self.n,self.m)
             self.Dirts=Dirts(self.n,self.m)
             self.Walls=Walls(self.n,self.m)
+            self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+
             self.draw()
     def randomWalls(self):
         tiles=self.Tiles.tiles
