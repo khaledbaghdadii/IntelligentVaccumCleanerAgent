@@ -34,7 +34,7 @@ class Game:
         self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
         self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
         self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(500, 510, 160, 30,  "Select Speed", ["Slow", "Medium","Fast"])
+        self.dropdown=DropDown(500, 510, 160, 30,  "Select Speed", ["Slow", "Medium","Fast","Very Fast"])
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
@@ -261,6 +261,8 @@ class Game:
             self.WAIT_TIME=0.2
         elif self.dropdown.main=="Fast":
             self.WAIT_TIME=0.05
+        elif self.dropdown.main=="Very Fast":
+            self.WAIT_TIME=0.001
     def clearDirts(self):
         self.killDirts()
         self.killVacuumCleaner()
