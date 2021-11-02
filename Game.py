@@ -7,7 +7,7 @@ from DropDown import DropDown
 from InputText import InputBox
 from TextLabel import TextLabel
 from VacuumCleaner import VacuumCleaner
-from Wall import Walls
+from Wall import Wall, Walls
 import constants
 from Tiles import Tile, Tiles
 from Dirt import Dirt, Dirts
@@ -38,8 +38,8 @@ class Game:
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
-        self.reset_btn= Button("Reset",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
-        self.start_btn= Button("Start",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
+        self.reset_btn= Button("  Reset  ",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
+        self.start_btn= Button("  Start  ",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
         self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
         self.initialized=False
         self.WAIT_TIME=0.5
@@ -52,7 +52,7 @@ class Game:
         self.font = pygame.font.Font(None, 40)
        
     def update_classes(self):
-        for tile in self.Tiles:
+        for tile in self.Tiles.tiles:
             self.all_sprites.add(tile)
             # print(type(tile))
         for dirt in self.Dirts.dirts :
@@ -72,6 +72,10 @@ class Game:
                 dirt.kill()
     def killVacuumCleaner(self):
         self.VacuumCleaner.kill()
+    def killTiles(self):
+        for tiles in self.Tiles.tiles:
+            for tile in tiles:
+                tile.kill()
     def draw(self):
         self.screen.fill(self.BG_COLOR)
         self.update_classes()
@@ -131,7 +135,7 @@ class Game:
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
                     if self.reset_btn.rect.collidepoint(x,y):
-                        self.__init__(self.n,self.m)
+                        self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
                         self.clean(0,0,self.Tiles.tiles)
@@ -203,10 +207,24 @@ class Game:
             size=self.input_txt.text.split(",")
             n=int(size[0])
             m=int(size[1])
-            self.__init__(n,m)
+            self.n=n
+            self.m=m
+            self.clearDirts()
+            self.clearWalls()
+
+            self.Tiles=Tiles(n,m)
+            self.Dirts=Dirts(n,m)
+            self.Walls=Walls(n,m)
+            self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+            self.draw()
         except:
             self.input_txt=InputBox(50,650,80,30)
             self.input_txt.draw(self.screen)
+    def resetGrid(self):
+            self.Tiles=Tiles(self.n,self.m)
+            self.Dirts=Dirts(self.n,self.m)
+            self.Walls=Walls(self.n,self.m)
+            self.draw()
     def randomWalls(self):
         tiles=self.Tiles.tiles
         # self.Tiles=Tiles(self.n,self.m)

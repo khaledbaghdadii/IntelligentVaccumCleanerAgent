@@ -59,6 +59,10 @@ class Dirts:
     def clearDirts(self):
         self.dirts=[[Dirt() for x in range(self.m)] for y in range(self.n)]
 
+    def changeDimensions(self,n,m):
+        self.dirts=self.TILE_WIDTH=(constants.SCREEN_WIDTH)/n
+        self.TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
+        self.dirts=[[Dirt() for x in range(m)] for y in range(n)]
 
 
         
