@@ -3,9 +3,11 @@ import pygame
 class Button:
     """Create a button, then blit the surface in the while loop"""
  
-    def __init__(self, text,  pos, font, bg="black", feedback=""):
+    def __init__(self, text,  pos, font, bg="black", feedback="",text_color="White"):
         self.x, self.y = pos
         self.font = pygame.font.SysFont("Arial", font)
+        self.text_color=text_color
+        
         if feedback == "":
             self.feedback = "text"
         else:
@@ -14,7 +16,7 @@ class Button:
  
     def change_text(self, text, bg="black"):
         """Change the text whe you click"""
-        self.text = self.font.render(text, 1, pygame.Color("White"))
+        self.text = self.font.render(text, 1, pygame.Color(self.text_color))
         self.size = self.text.get_size()
         self.surface = pygame.Surface(self.size)
         self.surface.fill(bg)

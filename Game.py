@@ -5,6 +5,7 @@ from pygame import font
 from Checkbox import Checkbox
 from DropDown import DropDown
 from InputText import InputBox
+from TextLabel import TextLabel
 from VacuumCleaner import VacuumCleaner
 from Wall import Walls
 import constants
@@ -25,15 +26,20 @@ class Game:
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
-        self.dirt_checkbox= Checkbox(self.screen,50,520,1,caption="Dirt")
-        self.wall_checkbox= Checkbox(self.screen,150,520,2,caption="Wall")
-        self.agent_checkbox= Checkbox(self.screen,250,520,2,caption="Place Agent")
-        self.reset_btn= Button("Reset",(50,600),font=20)
-        self.rnd_dirts_btn= Button("Random Dirts",(150,600),font=20)
-        self.grid_btn= Button("Generate Grid",(300,600),font=20)
-        self.rnd_walls_btn=Button("Random Walls",(450,600),font=20)
+        self.dirt_checkbox= Checkbox(self.screen,10,520,1,caption="Dirt")
+        self.wall_checkbox= Checkbox(self.screen,110,520,2,caption="Wall")
+        self.agent_checkbox= Checkbox(self.screen,210,520,2,caption="Place Agent")
+        
+        self.rnd_dirts_btn= Button("Random Dirts",(10,560),font=25,bg=(200,150,50))
+        self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
+        self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
+        self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
         self.dropdown=DropDown(500, 510, 160, 30,  "Select Speed", ["Slow", "Medium","Fast"])
-        self.input_txt=InputBox(50,650,80,30)
+        self.input_txt=InputBox(200,650,80,30)
+        self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
+        self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
+        self.reset_btn= Button("Reset",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
+        self.start_btn= Button("Start",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
         self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
         self.initialized=False
         self.WAIT_TIME=0.5
@@ -41,7 +47,7 @@ class Game:
         pygame.init()
         self.BG_COLOR = constants.BG_COLOR
         self.clock = pygame.time.Clock()
-        pygame.display.set_caption("Enter {}".format(constants.TITLE))
+        pygame.display.set_caption("{}".format(constants.TITLE))
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
         self.font = pygame.font.Font(None, 40)
        
@@ -76,13 +82,17 @@ class Game:
         self.wall_checkbox.render_checkbox()
         self.agent_checkbox.render_checkbox()
         self.screen.blit(self.reset_btn.surface, (self.reset_btn.x, self.reset_btn.y))
+        self.screen.blit(self.start_btn.surface, (self.start_btn.x, self.start_btn.y))
         self.screen.blit(self.rnd_dirts_btn.surface, (self.rnd_dirts_btn.x, self.rnd_dirts_btn.y))
+        self.screen.blit(self.clear_dirts_btn.surface, (self.clear_dirts_btn.x, self.clear_dirts_btn.y))
         self.screen.blit(self.grid_btn.surface, (self.grid_btn.x, self.grid_btn.y))
         self.screen.blit(self.rnd_walls_btn.surface, (self.rnd_walls_btn.x, self.rnd_walls_btn.y))
+        self.screen.blit(self.clear_walls_btn.surface, (self.clear_walls_btn.x, self.clear_walls_btn.y))
         self.input_txt.draw(self.screen)
         self.all_sprites.update()
         self.all_sprites.draw(self.screen)
         self.dropdown.draw(self.screen)
+        self.textlabel.draw(self.screen)
         # ----
         pygame.display.flip()
 
@@ -122,9 +132,16 @@ class Game:
                     self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.__init__(self.n,self.m)
+                    if self.start_btn.rect.collidepoint(x,y):
+                        self.setSpeed()
+                        self.clean(0,0,self.Tiles.tiles)
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
+                    if self.clear_dirts_btn.rect.collidepoint(x,y):
+                        self.clearDirts()
+                    if self.clear_walls_btn.rect.collidepoint(x,y):
+                        self.clearWalls()
                     if self.grid_btn.rect.collidepoint(x,y):
                         self.generateGrid()
                     if self.rnd_walls_btn.rect.collidepoint(x,y):
@@ -169,12 +186,7 @@ class Game:
     def randomDirts(self,tiles):
         # self.Tiles=Tiles(self.n,self.m)
         # self.Dirts=Dirts(self.n,self.m)
-        self.killDirts()
-        self.killVacuumCleaner()
-        self.Tiles.clearDirts()
-        self.Dirts.clearDirts()
-        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
-        
+        self.clearDirts()
         for i in tiles:
             for j in i:
                 random_dirt=rnd.getrandbits(3)
@@ -199,12 +211,7 @@ class Game:
         tiles=self.Tiles.tiles
         # self.Tiles=Tiles(self.n,self.m)
         # self.Walls=Walls(self.n,self.m)
-        self.killWalls()
-        self.killVacuumCleaner()
-        self.Tiles.clearWalls()
-        self.Walls.clearWalls()
-        print(self.Walls.walls)
-        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
+        self.clearWalls()
         for i in tiles:
             for j in i:
                 
@@ -236,6 +243,22 @@ class Game:
             self.WAIT_TIME=0.2
         elif self.dropdown.main=="Fast":
             self.WAIT_TIME=0.05
+    def clearDirts(self):
+        self.killDirts()
+        self.killVacuumCleaner()
+        self.Tiles.clearDirts()
+        self.Dirts.clearDirts()
+        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
+        self.draw()
+    def clearWalls(self):
+        self.killWalls()
+        self.killVacuumCleaner()
+        self.Tiles.clearWalls()
+        self.Walls.clearWalls()
+        print(self.Walls.walls)
+        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
+        
+
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)
