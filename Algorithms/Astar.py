@@ -12,7 +12,7 @@ class Astar:
         self.path=[[]]
         self.moves=0
         self.num_explored=0
-        self.goal=self.tilesArray[len(tilesArray)-1][len(tilesArray[0]-1)]
+        self.goal=self.tilesArray[len(tilesArray)-1][len(tilesArray[0])-1]
 
     def clean(self,agentX,agentY):
         frontier = []

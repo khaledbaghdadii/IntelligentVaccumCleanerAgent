@@ -220,7 +220,7 @@ class Game:
                         sleep(self.WAIT_TIME)
                         previousTile=tile
         self.moves_label.setText("No.  Moves: "+str(bfs.moves-1))
-        self.explored_label.setText("No.  Explored Nodes: "+str(bfs.num_explored))
+        self.explored_label.setText("No. Explored: "+str(bfs.num_explored))
     def cleanTSP(self,tiles_object):
         paths,num_explored,moves=generatePathsList(tiles_object,self.VacuumCleaner)
         tiles=[]
