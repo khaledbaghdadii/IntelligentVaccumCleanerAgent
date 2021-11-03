@@ -12,6 +12,7 @@ class Astar:
         self.path=[[]]
         self.moves=0
         self.num_explored=0
+        self.goal=self.tilesArray[len(tilesArray)-1][len(tilesArray[0]-1)]
 
     def clean(self,agentX,agentY):
         frontier = []
@@ -21,8 +22,6 @@ class Astar:
         currentTile = self.tilesArray[agentX][agentY]
         start = (currentTile.x,currentTile.y)
         self.prev = [[None for x in range(len(self.tilesArray[0]))] for y in range(len(self.tilesArray))]
-        # goal = self.tilesArray[len(self.tilesArray)-1][len(self.tilesArray[0])-1]
-        goal=self.tilesArray[0][0]
         frontier.append((0,currentTile))
         frontier.sort(reverse=True)
         came_from = dict()
@@ -38,7 +37,7 @@ class Astar:
             if currentTile.isDirty:
                 self.tilesArray[currentTile.x][currentTile.y].isDirty=False
                 self.dirtsArray.append((currentTile.x,currentTile.y))
-                goal=currentTile
+                self.goal=currentTile
                 print("added")
             explored[currentTile.x][currentTile.y] = True
             self.num_explored+=1
@@ -55,7 +54,7 @@ class Astar:
                 if (tileT not in cost_so_far.keys()) or (id):
                     cost_so_far[tileT] = new_cost
                     # print("COst so far ",cost_so_far)
-                    priority = new_cost + self.heuristic(tile, goal)
+                    priority = new_cost + self.heuristic(tile, self.goal)
                     frontier.append((priority,tile))
                     frontier.sort(key=lambda x: x[0])
                     came_from[tileT] = currentTile
@@ -63,7 +62,7 @@ class Astar:
                     
                 
                     if (tile.isDirty):
-                        goal=tile
+                        self.goal=tile
                         self.tilesArray[tile.x][tile.y].isDirty=False
                         self.dirtsArray.append((tile.x,tile.y))
                         self.path.append(self.backtrack(tile,came_from))
