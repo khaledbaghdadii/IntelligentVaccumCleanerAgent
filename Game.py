@@ -120,7 +120,7 @@ class Game:
                 elif event.key ==pygame.K_SPACE:
                     self.killVacuumCleaner()
                     self.setSpeed()
-                    self.cleanTSP(self.Tiles)
+                    self.clean(0,0,self.Tiles.tiles,self.Tiles)
                 
             for box in self.checkboxes:
                     box.update_checkbox(event)
@@ -280,7 +280,7 @@ class Game:
             size=self.input_txt.text.split(",")
             n=int(size[0])
             m=int(size[1])
-            if n==0 or m==0:
+            if n==0 or m==0 or (n>=90 and m>=90):
                 raise Exception('Invalid Number')
             self.n=n
             self.m=m
