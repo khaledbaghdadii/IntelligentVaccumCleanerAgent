@@ -35,7 +35,8 @@ class Game:
         self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
         self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
         self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(500, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast","Super Fast"])
+        self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast","Super Fast"])
+        self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search"])
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
@@ -44,6 +45,7 @@ class Game:
         self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
         self.initialized=False
         self.WAIT_TIME=0.5
+        self.ALGORITHM="Modified BFS"
     def init_pygame(self):
         pygame.init()
         self.BG_COLOR = constants.BG_COLOR
@@ -97,6 +99,7 @@ class Game:
         self.all_sprites.update()
         self.all_sprites.draw(self.screen)
         self.dropdown.draw(self.screen)
+        self.algorithm_list.draw(self.screen)
         self.textlabel.draw(self.screen)
         # ----
         pygame.display.flip()
@@ -128,6 +131,7 @@ class Game:
             # self.agent_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
+                self.algorithm_list.update(event)
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
                     y=pygame.mouse.get_pos()[1]
@@ -162,6 +166,11 @@ class Game:
                     self.draw()
                     # print(pygame.mouse.get_pos())
     def clean(self,x,y,tiles):
+        if self.ALGORITHM=="Modified BFS":
+            self.cleanBFS(x,y,tiles)
+        elif self.ALGORITHM=="TSP+Best First Search":
+            self.cleanTSP(tiles)
+    def cleanBFS(self,x,y,tiles):
         bfs=BFS(tiles)
         bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
         dirtsArray= bfs.getDirts()
