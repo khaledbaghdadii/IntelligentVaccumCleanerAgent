@@ -1,7 +1,7 @@
 from heapq import heapify
 import pygame
 import constants
-from Tiles import Tiles
+from Sprites.Tiles import Tiles
 # This class represent a graph
 class Graph:
     # Initialize the class
@@ -53,7 +53,8 @@ class Node:
         return ('({0},{1})'.format(self.position, self.f))
 # Best-first search
 def best_first_search(graph, heuristics, start, end):
-    
+    num_explored=0
+    moves=0
     # Create lists for open nodes and closed nodes
     open = []
     closed = []
@@ -69,6 +70,7 @@ def best_first_search(graph, heuristics, start, end):
         open.sort()
         # Get the node with the lowest cost
         current_node = open.pop(0)
+        num_explored+=1
         # Add the current node to the closed list
         closed.append(current_node)
         
@@ -80,7 +82,7 @@ def best_first_search(graph, heuristics, start, end):
                 current_node = current_node.parent
             path.append((int(start_node.name[0]),int((start_node.name[1]))))
             # Return reversed path
-            return path[::-1]
+            return path[::-1], num_explored
         # Get neighbours
         neighbors = graph.get(current_node.name)
         # Loop neighbors
@@ -127,10 +129,15 @@ def generateGraph(tiles_object):
 
 def generatePaths(graph,heuristics,nodes_path):
     paths=[]
+    num_explored=0
+    moves=0
     # Run search algorithm
     for i in range(len(nodes_path)-1):
-        path = best_first_search(graph, heuristics, str(nodes_path[i][0])+str(nodes_path[i][1]), str(nodes_path[i+1][0])+str(nodes_path[i+1][1]))
+        path,explored = best_first_search(graph, heuristics, str(nodes_path[i][0])+str(nodes_path[i][1]), str(nodes_path[i+1][0])+str(nodes_path[i+1][1]))
         paths.append(path)
-    return paths
+        num_explored+=explored
+        moves+=len(path)-1
+
+    return paths,num_explored,moves
     
 # Tell python to run main method

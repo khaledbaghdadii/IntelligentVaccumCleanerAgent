@@ -3,13 +3,13 @@
 from sys import maxsize
 import sys
 import queue
-from Tiles import Tiles
-from BFS import BFS
-from VacuumCleaner import VacuumCleaner
+from Sprites.Tiles import Tiles
+from Algorithms.BFS import BFS
+from Sprites.VacuumCleaner import VacuumCleaner
 from itertools import permutations
 import pygame
 import constants
-from BestFirstSearch import generateGraph,generatePaths
+from Algorithms.BestFirstSearch import generateGraph,generatePaths
 
 class Cell  :
     def __init__(self, x, y, dist, prev) :
@@ -89,8 +89,8 @@ def generatePathsList(tiles_object,vacuum):
     graph,nodes=createGraph(tiles_object.tiles,vacuum)
     min_path,nodes_path=travellingSalesmanProblem(graph,nodes)
     adjacency_matrix,heuristics=generateGraph(tiles_object)
-    paths=generatePaths(adjacency_matrix,heuristics,nodes_path)
-    return paths
+    paths,num_explored,moves=generatePaths(adjacency_matrix,heuristics,nodes_path)
+    return paths,num_explored,moves
 
 
 

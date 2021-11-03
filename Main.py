@@ -1,5 +1,4 @@
 from Game import Game
-from BFS import BFS
 from time import sleep
 def main():
     mygame = Game(6,7)

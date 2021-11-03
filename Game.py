@@ -2,21 +2,21 @@ import pygame
 import random as rnd
 from pygame import color
 from pygame import font
-from Checkbox import Checkbox
-from DropDown import DropDown
-from InputText import InputBox
-from TextLabel import TextLabel
-from VacuumCleaner import VacuumCleaner
-from Wall import Wall, Walls
+from Sprites.Checkbox import Checkbox
+from Sprites.DropDown import DropDown
+from Sprites.InputText import InputBox
+from Sprites.TextLabel import TextLabel
+from Sprites.VacuumCleaner import VacuumCleaner
+from Sprites.Wall import Wall, Walls
 import constants
-from Tiles import Tile, Tiles
-from Dirt import Dirt, Dirts
-from BFS import BFS
+from Sprites.Tiles import Tile, Tiles
+from Sprites.Dirt import Dirt, Dirts
+from Algorithms.BFS import BFS
 from time import sleep
-from Button import Button
-from Djikstra import Djikstra
-from Astar import Astar
-from TSP import generatePathsList
+from Sprites.Button import Button
+from Algorithms.Djikstra import Djikstra
+from Algorithms.Astar import Astar
+from Algorithms.TSP import generatePathsList
 class Game:
     def __init__(self,n,m):
         self.n=n
@@ -39,8 +39,8 @@ class Game:
         self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Very Slow", "Slow","Medium","Fast","Very Fast"])
         self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
         self.random_dist_list=DropDown(350, 560, 180, 20,  "Select Random Distribution", ["Uniform: 50%", "Uniform: 12.5%"])
-        self.moves_label=TextLabel('No.  Moves: 0"',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.explored_label=TextLabel('No.  Explored Nodes:0 "',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.moves_label=TextLabel('No.  Moves: 0',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.explored_label=TextLabel('No.  Explored Nodes:0 ',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
 
@@ -222,7 +222,7 @@ class Game:
         self.moves_label.setText("No.  Moves: "+str(bfs.moves-1))
         self.explored_label.setText("No.  Explored Nodes: "+str(bfs.num_explored))
     def cleanTSP(self,tiles_object):
-        paths=generatePathsList(tiles_object,self.VacuumCleaner)
+        paths,num_explored,moves=generatePathsList(tiles_object,self.VacuumCleaner)
         tiles=[]
         for path in paths:
             for tileXY in path:
@@ -246,7 +246,8 @@ class Game:
                 self.Dirts.dirts[nextTile.x][nextTile.y].kill()
                 self.Dirts.dirts[nextTile.x][nextTile.y]=Dirt()
                 self.Tiles.tiles[nextTile.x][nextTile.y].isDirty=False
-
+            self.moves_label.setText("No.  Moves: "+str(moves))
+            self.explored_label.setText("No.  Explored Nodes: "+str(num_explored))
             self.draw()
             sleep(self.WAIT_TIME)
     
@@ -299,6 +300,8 @@ class Game:
             self.Tiles=Tiles(self.n,self.m)
             self.Dirts=Dirts(self.n,self.m)
             self.Walls=Walls(self.n,self.m)
+            self.moves_label.setText("No.  Moves: 0")
+            self.explored_label.setText("No.  Explored Nodes: 0")
             self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
 
             self.draw()
