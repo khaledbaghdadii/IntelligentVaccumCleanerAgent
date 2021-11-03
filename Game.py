@@ -40,7 +40,7 @@ class Game:
         self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
         self.random_dist_list=DropDown(350, 560, 180, 20,  "Select Random Distribution", ["Uniform: 50%", "Uniform: 12.5%"])
         self.moves_label=TextLabel('No.  Moves: 0',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.explored_label=TextLabel('No.  Explored Nodes:0 ',570,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.explored_label=TextLabel('No.  Explored:0 ',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
 

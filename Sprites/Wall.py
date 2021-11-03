@@ -36,10 +36,6 @@ class Walls():
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        # print(mouse_x/self.TILE_WIDTH)
-        # print(mouse_y/self.TILE_HEIGHT)
-        # if mouse_x/self.TILE_HEIGHT > x+ self.TILE_HEIGHT*7/8:
-        #     wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
 
         if y<=self.m -1 and check:
             if mouse_x/self.TILE_WIDTH >= x+7/8 and mouse_x/self.TILE_WIDTH<=x+1:
@@ -87,10 +83,3 @@ class Walls():
     def clearWalls(self):
         self.walls=[]
         
-
-
-            # dirt = Wall(x,y,position,self.TILE_WIDTH,self.TILE_HEIGHT)
-            # self.dirts[x][y]=dirt
-            # print(x)
-            # print(y)
-

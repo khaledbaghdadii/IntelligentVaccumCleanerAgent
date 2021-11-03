@@ -25,7 +25,6 @@ class BFS:
             if currentTile.isDirty:
                 self.tilesArray[currentTile.x][currentTile.y].isDirty=False
                 self.dirtsArray.append((currentTile.x,currentTile.y))
-                print("added")
             explored[currentTile.x][currentTile.y] = True
             neighbors = self.getNeighbours(currentTile,self.tilesArray)
             for tile in neighbors:

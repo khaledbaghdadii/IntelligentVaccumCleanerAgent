@@ -37,7 +37,6 @@ class Djikstra:
             if currentTile.isDirty:
                 self.tilesArray[currentTile.x][currentTile.y].isDirty=False
                 self.dirtsArray.append((currentTile.x,currentTile.y))
-                print("added")
             explored[currentTile.x][currentTile.y] = True
             self.num_explored+=1
             neighbors = self.getNeighbours(currentTile,self.tilesArray)
@@ -45,27 +44,21 @@ class Djikstra:
                 tileT = (tile.x,tile.y)
 
                 new_cost = cost_so_far[cT] + 1
-                # print(new_cost)
                 if tileT in cost_so_far.keys():
                     isIt = True
                     id = new_cost < int(cost_so_far[tileT])
                 else: isIt = False
                 if (tileT not in cost_so_far.keys()) or (id):
                     cost_so_far[tileT] = new_cost
-                    # print("COst so far ",cost_so_far)
                     priority = new_cost
                     frontier.append((priority,tile))
                     frontier.sort(key=lambda x: x[0])
                     came_from[tileT] = currentTile
-                    #self.path.append(currentTile)
-                    
                 
                     if (tile.isDirty):
                         self.tilesArray[tile.x][tile.y].isDirty=False
                         self.dirtsArray.append((tile.x,tile.y))
                         self.path.append(self.backtrack(tile,came_from))
-                        print(tile.x,tile.y)
-                       # print(self.path) 
                         return self.clean(tile.x,tile.y)
                            
         return []

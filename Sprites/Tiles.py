@@ -95,12 +95,6 @@ class Tiles:
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
         if y<=self.m-1 and check:
             self.tiles[x][y].setIsDirty(True)
-            # Print statement for debugging (making sure tile state is set to dirty)
-            # for tiles in self.tiles:
-            #     for tile in tiles:
-            #         print(tile.isDirty)
-            # print(x)
-            # print(y)
     def addDirtXY(self,x,y,check):
         if y<=self.m-1 and check:
             self.tiles[x][y].setIsDirty(True)
@@ -144,7 +138,6 @@ class Tiles:
         m=len(self.tiles[0])
         for i,tiles in enumerate(self.tiles):
             for j,tile in enumerate(tiles):
-                # print("(",tile.x,",",tile.y,")")
                 tile.clearWalls()
                 #leftest border
                 if(tile.x==0):
@@ -166,7 +159,6 @@ class Tiles:
                 #bottom border
                 if(tile.y==m-1):
                     tile.has_walls_down=True
-                # print(tile.has_walls_left)
 
     def clearDirts(self):
         for tiles in self.tiles:
