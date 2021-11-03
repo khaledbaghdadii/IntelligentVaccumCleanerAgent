@@ -109,10 +109,6 @@ class Tiles:
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        # print(mouse_x/self.TILE_WIDTH)
-        # print(mouse_y/self.TILE_HEIGHT)
-        # if mouse_x/self.TILE_HEIGHT > x+ self.TILE_HEIGHT*7/8:
-        #     wall=Wall(x,y,"right",self.TILE_WIDTH,self.TILE_HEIGHT)
 
         if y<=self.m -1 and check:
             if mouse_x/self.TILE_WIDTH >= x+7/8 and mouse_x/self.TILE_WIDTH<=x+1 and x+1<len(self.tiles):
@@ -148,7 +144,7 @@ class Tiles:
         m=len(self.tiles[0])
         for i,tiles in enumerate(self.tiles):
             for j,tile in enumerate(tiles):
-                print("(",tile.x,",",tile.y,")")
+                # print("(",tile.x,",",tile.y,")")
                 tile.clearWalls()
                 #leftest border
                 if(tile.x==0):
@@ -170,7 +166,7 @@ class Tiles:
                 #bottom border
                 if(tile.y==m-1):
                     tile.has_walls_down=True
-                print(tile.has_walls_left)
+                # print(tile.has_walls_left)
 
     def clearDirts(self):
         for tiles in self.tiles:

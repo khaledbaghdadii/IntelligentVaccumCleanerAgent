@@ -14,7 +14,8 @@ from Dirt import Dirt, Dirts
 from BFS import BFS
 from time import sleep
 from Button import Button
-
+from GreedyAlgo import GreedyAlgo
+from TSP import generatePathsList
 class Game:
     def __init__(self,n,m):
         self.n=n
@@ -34,7 +35,7 @@ class Game:
         self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
         self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
         self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(500, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast"])
+        self.dropdown=DropDown(500, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast","Super Fast"])
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
@@ -113,7 +114,7 @@ class Game:
                 elif event.key ==pygame.K_SPACE:
                     self.killVacuumCleaner()
                     self.setSpeed()
-                    self.clean(0,0,self.Tiles.tiles)
+                    self.cleanTSP(self.Tiles)
                 
             for box in self.checkboxes:
                     box.update_checkbox(event)
@@ -167,7 +168,6 @@ class Game:
         if (self.VacuumCleaner.x,self.VacuumCleaner.y) in dirtsArray:
             self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y].kill()
             self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y]=Dirt()
-
         for i in bfs.path:
             if(len(i)!=0):
                 previousTile=i[0]
@@ -190,6 +190,61 @@ class Game:
                         self.draw()
                         sleep(self.WAIT_TIME)
                         previousTile=tile
+    def cleanTSP(self,tiles_object):
+        paths=generatePathsList(tiles_object,self.VacuumCleaner)
+        print(paths)
+        tiles=[]
+        for path in paths:
+            for tileXY in path:
+                tileX=tileXY[0]
+                tileY=tileXY[1]
+                # print(tileX)
+                # print(tileY)
+                tile=self.Tiles.tiles[tileX][tileY]
+                print(tile)
+                tiles.append(tile)
+        vacuumX=self.VacuumCleaner.x
+        vacuumY=self.VacuumCleaner.y
+        if self.Tiles.tiles[vacuumX][vacuumY].isDirty:
+            self.Dirts.dirts[vacuumX][vacuumY].kill()
+            self.Dirts.dirts[vacuumX][vacuumY]=Dirt()
+            self.Tiles.tiles[vacuumX][vacuumY].isDirty=False
+        for i in range(len(tiles)-1):
+            currentTile=tiles[i]
+            nextTile=tiles[i+1]
+            dx=nextTile.x-currentTile.x
+            dy=nextTile.y-currentTile.y
+            self.VacuumCleaner.move(dx,dy)
+            if nextTile.isDirty:
+                self.Dirts.dirts[nextTile.x][nextTile.y].kill()
+                self.Dirts.dirts[nextTile.x][nextTile.y]=Dirt()
+                self.Tiles.tiles[nextTile.x][nextTile.y].isDirty=False
+
+            self.draw()
+            sleep(self.WAIT_TIME)
+        
+
+        # for i in range(len(tiles)-1):
+        #     tile=tiles[i]
+        #     nextTile=tiles[i+1]
+        #     if(tile.isDirty):
+        #         self.Dirts.dirts[vacuumX][vacuumY].kill()
+        #         self.Dirts.dirts[vacuumX][vacuumY]=Dirt()
+        #         self.Tiles.tiles[vacuumX][vacuumY].isDirty=False
+
+
+        #     dx=nextTile.x=tile.x
+        #     dy=nextTile.y-tile.y
+        #     self.VacuumCleaner.move(dx,dy)
+        #     self.draw()
+        #     sleep(self.WAIT_TIME)
+
+                    
+
+
+
+        pass
+
     def randomDirts(self,tiles):
         # self.Tiles=Tiles(self.n,self.m)
         # self.Dirts=Dirts(self.n,self.m)
@@ -270,6 +325,8 @@ class Game:
             self.WAIT_TIME=0.05
         elif self.dropdown.main=="Very Fast":
             self.WAIT_TIME=0.001
+        elif self.dropdown.main=="Super Fast":
+            self.WAIT_TIME=0.0001
     def clearDirts(self):
         self.killDirts()
         self.killVacuumCleaner()
