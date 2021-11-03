@@ -122,7 +122,7 @@ def generateGraph(tiles_object):
             if(not tile.has_walls_left):
                 graph.connect((str(i)+str(j)),(str(i-1)+str(j)),1)
             heuristics[(str(i)+str(j))]=1
-    # print(graph)
+    
     return graph,heuristics
 
 def generatePaths(graph,heuristics,nodes_path):
@@ -131,8 +131,6 @@ def generatePaths(graph,heuristics,nodes_path):
     for i in range(len(nodes_path)-1):
         path = best_first_search(graph, heuristics, str(nodes_path[i][0])+str(nodes_path[i][1]), str(nodes_path[i+1][0])+str(nodes_path[i+1][1]))
         paths.append(path)
-        # print("path")
-        # print(paths)
     return paths
     
 # Tell python to run main method

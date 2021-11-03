@@ -1,7 +1,7 @@
-from Queue import PriorityQueue
+from queue import PriorityQueue
 
 
-class GreedyAlgo:
+class Djikstra:
     prev=[[]]
     path=[[]]
 
@@ -10,66 +10,76 @@ class GreedyAlgo:
         self.dirtsArray=[]
         self.prev=[[]]
         self.path=[[]]
-
+        self.moves=0
+        self.num_explored=0
 
     def clean(self,agentX,agentY):
-        frontier = PriorityQueue()
+        frontier = []
         self.dirtsArray.append((agentX,agentY))
         # explored list covers all the tiles in the grid as booleans
         explored = [[False for x in range(len(self.tilesArray[0]))] for y in range(len(self.tilesArray))]
         currentTile = self.tilesArray[agentX][agentY]
-        # start = (currentTile.x,currentTile.y)
+        start = (currentTile.x,currentTile.y)
         self.prev = [[None for x in range(len(self.tilesArray[0]))] for y in range(len(self.tilesArray))]
 
-        frontier.put((currentTile,currentTile.x,currentTile.y),0)
+        frontier.append((0,currentTile))
+        frontier.sort(reverse=True)
         came_from = dict()
         cost_so_far = dict()
-        came_from[(currentTile,currentTile.x,currentTile.y)] = None
-        cost_so_far[(currentTile,currentTile.x,currentTile.y)] = 0
-        print("COst so far ",cost_so_far)
+        # came_from[currentTile] = None
+        # cost_so_far[currentTile] = 0
+        came_from[start] = None
+        cost_so_far[start] = 0
 
-        while not frontier.empty():
-            currentTile = frontier.get() #popping the first tile
-            if currentTile[0].isDirty:
-                self.tilesArray[currentTile[0].x][currentTile[0].y].isDirty=False
-                self.dirtsArray.append((currentTile[0].x,currentTile[0].y))
+        while len(frontier)!=0:
+            currentTile = frontier.pop(0)[1] #popping the first tile
+            cT = (currentTile.x,currentTile.y)
+            if currentTile.isDirty:
+                self.tilesArray[currentTile.x][currentTile.y].isDirty=False
+                self.dirtsArray.append((currentTile.x,currentTile.y))
                 print("added")
-            explored[currentTile[0].x][currentTile[0].y] = True
-            neighbors = self.getNeighbours(currentTile[0],self.tilesArray)
+            explored[currentTile.x][currentTile.y] = True
+            self.num_explored+=1
+            neighbors = self.getNeighbours(currentTile,self.tilesArray)
             for tile in neighbors:
-                new_cost = cost_so_far[currentTile] + 1
-                # print("new cost")
+                tileT = (tile.x,tile.y)
+
+                new_cost = cost_so_far[cT] + 1
                 # print(new_cost)
-                # print(type(new_cost))
-                # print("cost so far")
-                # print(cost_so_far[(tile,tile.x,tile.y)])
-                # print(type(cost_so_far[(tile,tile.x,tile.y)]))
-                if tile not in cost_so_far:
-                    cost_so_far[(tile,tile.x,tile.y)]=0
-                if tile not in cost_so_far or new_cost < cost_so_far[(tile,tile.x,tile.y)]:
-                    cost_so_far[tile] = new_cost
+                if tileT in cost_so_far.keys():
+                    isIt = True
+                    id = new_cost < int(cost_so_far[tileT])
+                else: isIt = False
+                if (tileT not in cost_so_far.keys()) or (id):
+                    cost_so_far[tileT] = new_cost
+                    # print("COst so far ",cost_so_far)
                     priority = new_cost
-                    frontier.put(tile, priority)
-                    came_from[tile] = currentTile
+                    frontier.append((priority,tile))
+                    frontier.sort(key=lambda x: x[0])
+                    came_from[tileT] = currentTile
+                    #self.path.append(currentTile)
+                    
+                
                     if (tile.isDirty):
                         self.tilesArray[tile.x][tile.y].isDirty=False
                         self.dirtsArray.append((tile.x,tile.y))
-
-                        self.path.append(self.backtrack(tile))
+                        self.path.append(self.backtrack(tile,came_from))
+                        print(tile.x,tile.y)
+                       # print(self.path) 
                         return self.clean(tile.x,tile.y)
+                           
         return []
 
-    def backtrack(self,endTile):
+    def backtrack(self,endTile,came_from):
         path=[]
         path.append(endTile)
-        prevTile=self.prev[endTile.x][endTile.y]
+        prevTile=came_from[(endTile.x,endTile.y)]
         while prevTile!=None:
             path.append(prevTile)
-            prevTile = self.prev[prevTile.x][prevTile.y]
+            prevTile=came_from[(prevTile.x,prevTile.y)]
         path.reverse()
-
+        self.moves+=len(path)
         return path
-    
 
     def getDirts(self):
         return self.dirtsArray
@@ -96,3 +106,8 @@ class GreedyAlgo:
             #in case it hits the max borders, it is handled in initializing the borders upon creation
             neighbours.append(tilesArray[a][b])
         return neighbours
+
+
+
+
+

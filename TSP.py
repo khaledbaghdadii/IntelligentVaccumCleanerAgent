@@ -38,12 +38,12 @@ def createGraph(tiles, agent):
         for j in range(len(nodes)):
             dist=abs(nodes[i][0]-nodes[j][0])+abs(nodes[i][1]-nodes[j][1])
             graph[i][j]=dist
-    print(graph)
+    
     return graph,nodes
 
 
 # # implementation of traveling Salesman Problem
-def travellingSalesmanProblem(graph, s, nodes):
+def travellingSalesmanProblem(graph, nodes):
     # store all vertex apart from source vertex
     vertex = []
     path = []
@@ -87,10 +87,9 @@ def travellingSalesmanProblem(graph, s, nodes):
 
 def generatePathsList(tiles_object,vacuum):
     graph,nodes=createGraph(tiles_object.tiles,vacuum)
-    min_path,nodes_path=travellingSalesmanProblem(graph,vacuum,nodes)
-    graph,heuristics=generateGraph(tiles_object)
-    paths=generatePaths(graph,heuristics,nodes_path)
-    # print(paths)
+    min_path,nodes_path=travellingSalesmanProblem(graph,nodes)
+    adjacency_matrix,heuristics=generateGraph(tiles_object)
+    paths=generatePaths(adjacency_matrix,heuristics,nodes_path)
     return paths
 
 

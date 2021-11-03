@@ -14,7 +14,8 @@ from Dirt import Dirt, Dirts
 from BFS import BFS
 from time import sleep
 from Button import Button
-from GreedyAlgo import GreedyAlgo
+from Djikstra import Djikstra
+from Astar import Astar
 from TSP import generatePathsList
 class Game:
     def __init__(self,n,m):
@@ -35,10 +36,14 @@ class Game:
         self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
         self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
         self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Slow", "Medium","Fast","Very Fast","Super Fast"])
-        self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search"])
+        self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Very Slow", "Slow","Medium","Fast","Very Fast"])
+        self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
+        self.random_dist_list=DropDown(350, 560, 180, 20,  "Select Random Distribution", ["Uniform: 50%", "Uniform: 12.5%"])
+        self.moves_label=TextLabel('No.  Moves: 0"',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.explored_label=TextLabel('No.  Explored Nodes:0 "',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.input_txt=InputBox(200,650,80,30)
         self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
+
         self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
         self.reset_btn= Button("  Reset  ",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
         self.start_btn= Button("  Start  ",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
@@ -57,13 +62,11 @@ class Game:
     def update_classes(self):
         for tile in self.Tiles.tiles:
             self.all_sprites.add(tile)
-            # print(type(tile))
         for dirt in self.Dirts.dirts :
             self.all_sprites.add(dirt)
         
         for wall in self.Walls.walls:
             self.all_sprites.add(wall)
-                # print("dirt")
         self.VacuumCleaner.kill()
         self.all_sprites.add(self.VacuumCleaner)
     def killWalls(self):
@@ -82,9 +85,9 @@ class Game:
     def draw(self):
         self.screen.fill(self.BG_COLOR)
         self.update_classes()
-        # ----
-
-        
+        self.moves_label.draw(self.screen)
+        self.explored_label.draw(self.screen)
+        self.random_dist_list.draw(self.screen)
         self.dirt_checkbox.render_checkbox()
         self.wall_checkbox.render_checkbox()
         self.agent_checkbox.render_checkbox()
@@ -101,7 +104,7 @@ class Game:
         self.dropdown.draw(self.screen)
         self.algorithm_list.draw(self.screen)
         self.textlabel.draw(self.screen)
-        # ----
+
         pygame.display.flip()
 
 
@@ -126,12 +129,10 @@ class Game:
                             if b != box:
                                 b.checked = False
             self.input_txt.handle_event(event)
-            # self.dirt_checkbox.update_checkbox(event)
-            # self.wall_checkbox.update_checkbox(event)
-            # self.agent_checkbox.update_checkbox(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
                 self.algorithm_list.update(event)
+                self.random_dist_list.update(event)
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
                     y=pygame.mouse.get_pos()[1]
@@ -146,7 +147,7 @@ class Game:
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
-                        self.clean(0,0,self.Tiles.tiles)
+                        self.clean(0,0,self.Tiles.tiles,self.Tiles)
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
@@ -159,19 +160,38 @@ class Game:
                     if self.rnd_walls_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomWalls()
-                    # for dirt in self.Dirts:
-                    #     for a in dirt:
-                    #         print(type(a))
-                    # print(self.Dirts)
                     self.draw()
-                    # print(pygame.mouse.get_pos())
-    def clean(self,x,y,tiles):
-        if self.ALGORITHM=="Modified BFS":
-            self.cleanBFS(x,y,tiles)
-        elif self.ALGORITHM=="TSP+Best First Search":
-            self.cleanTSP(tiles)
-    def cleanBFS(self,x,y,tiles):
-        bfs=BFS(tiles)
+
+    def clean(self,x,y,tiles,tiles_object):
+        if self.algorithm_list.main=="Modified BFS":
+            self.ALGORITHM="Modified BFS"
+            self.cleanBFSVariants(x,y,tiles)
+
+        elif self.algorithm_list.main=="TSP+Best First Search":
+            self.ALGORITHM="TSP+Best First Search"
+            self.cleanTSP(tiles_object)
+            
+        elif self.algorithm_list.main=="Djikstra":
+            self.ALGORITHM="Djikstra"
+            self.cleanBFSVariants(x,y,tiles)
+        
+        elif self.algorithm_list.main=="A*":
+            self.ALGORITHM="A*"
+            self.cleanBFSVariants(x,y,tiles)
+            
+        else:
+            self.cleanBFSVariants(x,y,tiles)
+    def cleanBFSVariants(self,x,y,tiles):
+        if(self.ALGORITHM=="Modified BFS"):
+            bfs=BFS(tiles)
+        elif(self.ALGORITHM=="Djikstra"):
+            bfs=Djikstra(tiles)
+        elif(self.ALGORITHM=="A*"):
+            bfs=Astar(tiles)
+        else:
+            bfs=BFS(tiles)
+            
+        
         bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
         dirtsArray= bfs.getDirts()
         if (self.VacuumCleaner.x,self.VacuumCleaner.y) in dirtsArray:
@@ -193,24 +213,22 @@ class Game:
                         if(currentTile in dirtsArray):
                             self.Dirts.dirts[tile.x][tile.y].kill()
                             self.Dirts.dirts[tile.x][tile.y]=Dirt()
-                        #call move vacuum cleaner method
+                        # call move vacuum cleaner method
                         self.VacuumCleaner.move(dx,dy)
                         
                         self.draw()
                         sleep(self.WAIT_TIME)
                         previousTile=tile
+        self.moves_label.setText("No.  Moves: "+str(bfs.moves-1))
+        self.explored_label.setText("No.  Explored Nodes: "+str(bfs.num_explored))
     def cleanTSP(self,tiles_object):
         paths=generatePathsList(tiles_object,self.VacuumCleaner)
-        print(paths)
         tiles=[]
         for path in paths:
             for tileXY in path:
                 tileX=tileXY[0]
                 tileY=tileXY[1]
-                # print(tileX)
-                # print(tileY)
                 tile=self.Tiles.tiles[tileX][tileY]
-                print(tile)
                 tiles.append(tile)
         vacuumX=self.VacuumCleaner.x
         vacuumY=self.VacuumCleaner.y
@@ -231,22 +249,7 @@ class Game:
 
             self.draw()
             sleep(self.WAIT_TIME)
-        
-
-        # for i in range(len(tiles)-1):
-        #     tile=tiles[i]
-        #     nextTile=tiles[i+1]
-        #     if(tile.isDirty):
-        #         self.Dirts.dirts[vacuumX][vacuumY].kill()
-        #         self.Dirts.dirts[vacuumX][vacuumY]=Dirt()
-        #         self.Tiles.tiles[vacuumX][vacuumY].isDirty=False
-
-
-        #     dx=nextTile.x=tile.x
-        #     dy=nextTile.y-tile.y
-        #     self.VacuumCleaner.move(dx,dy)
-        #     self.draw()
-        #     sleep(self.WAIT_TIME)
+    
 
                     
 
@@ -255,15 +258,18 @@ class Game:
         pass
 
     def randomDirts(self,tiles):
-        # self.Tiles=Tiles(self.n,self.m)
-        # self.Dirts=Dirts(self.n,self.m)
         self.clearDirts()
         for i in tiles:
             for j in i:
-                random_dirt=rnd.getrandbits(3)
+                if self.random_dist_list.main=="Uniform: 50%":
+
+                    random_dirt=int(rnd.uniform(0,2))
+                else:
+                    random_dirt=rnd.getrandbits(3)
+
+                
                 if random_dirt==1:
                     j.isDirty=True
-                    # print(j.x)
                     self.Dirts.addDirtXY(j.x,j.y,True)
                     self.Tiles.addDirtXY(j.x,j.y,True)
                 else:
@@ -298,8 +304,6 @@ class Game:
             self.draw()
     def randomWalls(self):
         tiles=self.Tiles.tiles
-        # self.Tiles=Tiles(self.n,self.m)
-        # self.Walls=Walls(self.n,self.m)
         self.clearWalls()
         for i in tiles:
             for j in i:
@@ -307,13 +311,11 @@ class Game:
                 random_dirt=rnd.getrandbits(3)
                 if random_dirt==0:
                     j.has_walls_up=True
-                    # print(j.x)
                     self.Walls.addWallXY(j.x,j.y,True,"up")
                     self.Tiles.addWallXY(j.x,j.y,True,"up")
                 elif random_dirt==1:
                     j.has_walls_down=True
                     self.Walls.addWallXY(j.x,j.y,True,"down")
-                    # print(j.x,j.y)
                     self.Tiles.addWallXY(j.x,j.y,True,"down")
                 elif random_dirt==2:
                     j.has_walls_right=True
@@ -326,15 +328,15 @@ class Game:
         self.draw()
                 
     def setSpeed(self):
-        if self.dropdown.main=="Slow":
+        if self.dropdown.main=="Very Slow":
             self.WAIT_TIME=0.5
-        elif self.dropdown.main=="Medium":
+        elif self.dropdown.main=="Slow":
             self.WAIT_TIME=0.2
-        elif self.dropdown.main=="Fast":
+        elif self.dropdown.main=="Medium":
             self.WAIT_TIME=0.05
-        elif self.dropdown.main=="Very Fast":
+        elif self.dropdown.main=="Fast":
             self.WAIT_TIME=0.001
-        elif self.dropdown.main=="Super Fast":
+        elif self.dropdown.main=="Very Fast":
             self.WAIT_TIME=0.0001
     def clearDirts(self):
         self.killDirts()
@@ -348,7 +350,6 @@ class Game:
         self.killVacuumCleaner()
         self.Tiles.clearWalls()
         self.Walls.clearWalls()
-        # print(self.Walls.walls)
         self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
         
 
