@@ -7,6 +7,7 @@ from Sprites.DropDown import DropDown
 from Sprites.InputText import InputBox
 from Sprites.TextLabel import TextLabel
 from Sprites.VacuumCleaner import VacuumCleaner
+from Sprites.DirtAgent import DirtAgent
 from Sprites.Wall import Wall, Walls
 import constants
 from Sprites.Tiles import Tile, Tiles
@@ -26,6 +27,7 @@ class Game:
         self.Dirts=Dirts(n,m)
         self.Walls = Walls(n,m)
         self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+        self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
         self.dirt_checkbox= Checkbox(self.screen,10,520,1,caption="Dirt")
@@ -69,6 +71,8 @@ class Game:
             self.all_sprites.add(wall)
         self.VacuumCleaner.kill()
         self.all_sprites.add(self.VacuumCleaner)
+        self.DirtAgent.kill()
+        self.all_sprites.add(self.DirtAgent)
     def killWalls(self):
         for wall in self.Walls.walls:
             wall.kill()

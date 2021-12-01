@@ -1,4 +1,3 @@
-
 class BFS:
     prev=[[]]
     path=[[]]
@@ -78,8 +77,4 @@ class BFS:
             #in case it hits the max borders, it is handled in initializing the borders upon creation
             neighbours.append(tilesArray[a][b])
         return neighbours
-
-
-
-
 
