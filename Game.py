@@ -1,7 +1,9 @@
+
 import pygame
 import random as rnd
 from pygame import color
 from pygame import font
+from pygame.event import get
 from Sprites.Checkbox import Checkbox
 from Sprites.DropDown import DropDown
 from Sprites.InputText import InputBox
@@ -18,6 +20,7 @@ from Sprites.Button import Button
 from Algorithms.Djikstra import Djikstra
 from Algorithms.Astar import Astar
 from Algorithms.TSP import generatePathsList
+
 class Game:
     def __init__(self,n,m):
         self.n=n
@@ -151,7 +154,8 @@ class Game:
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
-                        self.clean(0,0,self.Tiles.tiles,self.Tiles)
+                        # self.clean(0,0,self.Tiles.tiles,self.Tiles)
+                        self.startDirtAgent()
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
@@ -360,6 +364,68 @@ class Game:
         self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
         
 
+    def getNeighbours(self,currentTile,tilesArray):
+        neighbours = []
+        if(not currentTile.hasWallLeft()):
+            a = currentTile.x-1
+            b = currentTile.y
+            # in case it hits the max borders, it is handled in initializing the borders upon creation
+            neighbours.append(tilesArray[a][b])
+        if(not currentTile.hasWallRight()):
+            a = currentTile.x+1
+            b = currentTile.y
+            #in case it hits the max borders, it is handled in initializing the borders upon creation
+            neighbours.append(tilesArray[a][b])
+        if(not currentTile.hasWallUp()):
+            a = currentTile.x
+            b = currentTile.y-1
+            #in case it hits the max borders, it is handled in initializing the borders upon creation
+            neighbours.append(tilesArray[a][b])
+        if(not currentTile.hasWallDown()):
+            a = currentTile.x
+            b = currentTile.y+1
+            #in case it hits the max borders, it is handled in initializing the borders upon creation
+            neighbours.append(tilesArray[a][b])
+        return neighbours
+    def startDirtAgent(self):
+        prevPos=[]
+        for i in range(15):
+            neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y],self.Tiles.tiles)
+            neighbourAvailable=False
+            for j in range(len(neighbours)):
+                if not neighbours[j] in prevPos:
+                    neighbourAvailable=True
+                    break
+            if(not neighbourAvailable):
+                prevPos=[]
+
+            n=rnd.randint(0,len(neighbours)-1)
+            print(neighbours)
+            print("n: ",n)
+            prevPosX=self.DirtAgent.x
+            prevPosY=self.DirtAgent.y
+            prevPos.append((prevPosX,prevPosY))
+            nextPosX=neighbours[n].x
+            nextPosY=neighbours[n].y
+            while((nextPosX,nextPosY) in prevPos):
+                n=rnd.randint(0,len(neighbours)-1)
+                nextPosX=neighbours[n].x
+                nextPosY=neighbours[n].y
+
+            dx=nextPosX-prevPosX
+            dy=nextPosY-prevPosY
+            print(dx," , ",dy)
+            m=rnd.randint(0,1)
+            if m==0:
+                if( not self.Tiles.tiles[prevPosX][prevPosY].isDirty):
+                    self.Dirts.addDirtXY(prevPosX,prevPosY,True)
+                    self.Tiles.addDirtXY(prevPosX,prevPosY,True)
+            self.DirtAgent.move(dx,dy)
+            
+            
+
+            self.draw()
+            sleep(self.WAIT_TIME)
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)
