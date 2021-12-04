@@ -393,7 +393,7 @@ class Game:
             neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y],self.Tiles.tiles)
             neighbourAvailable=False
             for j in range(len(neighbours)):
-                if not neighbours[j] in prevPos:
+                if not (neighbours[j].x,neighbours[j].y) in prevPos:
                     neighbourAvailable=True
                     break
             if(not neighbourAvailable):
@@ -420,6 +420,8 @@ class Game:
                 if( not self.Tiles.tiles[prevPosX][prevPosY].isDirty):
                     self.Dirts.addDirtXY(prevPosX,prevPosY,True)
                     self.Tiles.addDirtXY(prevPosX,prevPosY,True)
+                else:
+                    pass
             self.DirtAgent.move(dx,dy)
             
             
