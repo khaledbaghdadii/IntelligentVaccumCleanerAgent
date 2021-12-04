@@ -98,6 +98,8 @@ class Tiles:
     def addDirtXY(self,x,y,check):
         if y<=self.m-1 and check:
             self.tiles[x][y].setIsDirty(True)
+    def removeDirtXY(self,x,y):
+        self.tiles[x][y].setIsDirty(False)
     def addWall(self,mouse_x,mouse_y,check):
         constants.SCREEN_WIDTH
         constants.SCREEN_HEIGHT

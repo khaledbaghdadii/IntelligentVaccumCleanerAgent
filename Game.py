@@ -155,7 +155,7 @@ class Game:
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
                         # self.clean(0,0,self.Tiles.tiles,self.Tiles)
-                        self.startDirtAgent()
+                        self.startDirtAgentRandom()
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
@@ -387,7 +387,7 @@ class Game:
             #in case it hits the max borders, it is handled in initializing the borders upon creation
             neighbours.append(tilesArray[a][b])
         return neighbours
-    def startDirtAgent(self):
+    def startDirtAgentRandom(self):
         prevPos=[]
         for i in range(15):
             neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y],self.Tiles.tiles)
@@ -400,13 +400,15 @@ class Game:
                 prevPos=[]
 
             n=rnd.randint(0,len(neighbours)-1)
+            nextPosX=neighbours[n].x
+            nextPosY=neighbours[n].y
             print(neighbours)
             print("n: ",n)
             prevPosX=self.DirtAgent.x
             prevPosY=self.DirtAgent.y
+            #added to the list of visited positions
             prevPos.append((prevPosX,prevPosY))
-            nextPosX=neighbours[n].x
-            nextPosY=neighbours[n].y
+            #make sure the next position is not visted before
             while((nextPosX,nextPosY) in prevPos):
                 n=rnd.randint(0,len(neighbours)-1)
                 nextPosX=neighbours[n].x

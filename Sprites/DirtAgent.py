@@ -11,6 +11,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.y=y
         self.TILE_WIDTH= TILE_WIDTH
         self.TILE_HEIGHT= TILE_HEIGHT
+        self.count=0
         self.filepath = "images/cat.png"
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
@@ -36,8 +37,4 @@ class DirtAgent(pygame.sprite.Sprite):
         if y<=m -1 and check :
             self.__init__(self.TILE_WIDTH,self.TILE_HEIGHT,x,y)
             
-    def addDirt(self):
-        Dirts.addDirtXY(self.x,self.x)
-        Tiles.addDirtXY(self.x,self.y)
 
-    
