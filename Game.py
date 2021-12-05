@@ -20,6 +20,7 @@ from Sprites.Button import Button
 from Algorithms.Djikstra import Djikstra
 from Algorithms.Astar import Astar
 from Algorithms.TSP import generatePathsList
+from Algorithms.MiniMax.minimax import MiniMax
 
 class Game:
     def __init__(self,n,m):
@@ -153,9 +154,10 @@ class Game:
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
-                        self.setSpeed()
-                        # self.clean(0,0,self.Tiles.tiles,self.Tiles)
-                        self.startDirtAgentRandom()
+                        self.cleanMiniMax()
+                        # self.setSpeed()
+                        # # self.clean(0,0,self.Tiles.tiles,self.Tiles)
+                        # self.startDirtAgentRandom()
                     if self.rnd_dirts_btn.rect.collidepoint(x,y):
                         self.killVacuumCleaner()
                         self.randomDirts(self.Tiles.tiles)
@@ -198,7 +200,6 @@ class Game:
             bfs=Astar(tiles)
         else:
             bfs=BFS(tiles)
-            
         
         bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
         dirtsArray= bfs.getDirts()
@@ -265,6 +266,13 @@ class Game:
 
 
         pass
+    def cleanMiniMax(self):
+        MiniMaxS=MiniMax()
+        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
+        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
+        score,tiles_array=MiniMaxS.minimax(self.DirtAgent.count,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,[],0,0,3,[],[])
+        print("Score: ",score)
+        print("Tiles Array: ",tiles_array)
 
     def randomDirts(self,tiles):
         self.clearDirts()
