@@ -154,7 +154,12 @@ class Game:
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
-                        self.cleanMiniMax()
+                        for i in range(30):
+                            self.startDirtAgentRandom()
+                            score,tile=self.cleanMiniMax()
+                            self.VacuumCleaner.move(tile.x-self.VacuumCleaner.x,tile.y-self.VacuumCleaner.y)
+                            self.draw()
+
                         # self.setSpeed()
                         # # self.clean(0,0,self.Tiles.tiles,self.Tiles)
                         # self.startDirtAgentRandom()
@@ -270,9 +275,16 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tiles_array=MiniMaxS.minimax(self.DirtAgent.count,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,[],0,0,3,[],[])
-        print("Score: ",score)
-        print("Tiles Array: ",tiles_array)
+        score,tile=MiniMaxS.minimax(False,7,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        if self.Tiles.tiles[tile.x][tile.y].isDirty:
+            self.Dirts.dirts[tile.x][tile.y].kill()
+            self.Dirts.dirts[tile.x][tile.y]=Dirt()
+            if ((tile.x,tile.y) in self.Dirts.dirts_array):
+                index=self.Dirts.dirts_array.index((tile.x,tile.y))
+                self.Dirts.dirts_array.pop(index)
+                self.Tiles.tiles[tile.x][tile.y].isDirty=False
+        return score,tile
+        
 
     def randomDirts(self,tiles):
         self.clearDirts()
@@ -397,7 +409,7 @@ class Game:
         return neighbours
     def startDirtAgentRandom(self):
         prevPos=[]
-        for i in range(15):
+        for i in range(1):
             neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y],self.Tiles.tiles)
             neighbourAvailable=False
             for j in range(len(neighbours)):
@@ -426,13 +438,14 @@ class Game:
             dy=nextPosY-prevPosY
             print(dx," , ",dy)
             m=rnd.randint(0,1)
-            if m==0:
-                if( not self.Tiles.tiles[prevPosX][prevPosY].isDirty):
+            
+            if( self.DirtAgent.count%3==0):
                     self.Dirts.addDirtXY(prevPosX,prevPosY,True)
                     self.Tiles.addDirtXY(prevPosX,prevPosY,True)
-                else:
+            else:
                     pass
             self.DirtAgent.move(dx,dy)
+            self.DirtAgent.count+=1
             
             
 

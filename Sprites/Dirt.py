@@ -32,6 +32,7 @@ class Dirts:
         self.TILE_WIDTH=(constants.SCREEN_WIDTH)/n
         self.TILE_HEIGHT=(constants.SCREEN_HEIGHT-200)/m
         self.dirts=[[Dirt() for x in range(m)] for y in range(n)]
+        self.dirts_array=[]
         # for i in range(n):
         #     for j in range(m):
         #         # TILE_WIDTH=(constants.SCREEN_WIDTH)/n
@@ -50,10 +51,12 @@ class Dirts:
         if y<=self.m -1 and check and self.dirts[x][y].TILE_HEIGHT==0:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
+            self.dirts_array.append((x,y))
     def addDirtXY(self,x,y,check):
         if y<=self.m -1 and check and self.dirts[x][y].TILE_HEIGHT==0:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
+            self.dirts_array.append((x,y))
     def removeDirtXY(self,x,y):
         dirt = Dirt()
         self.dirts[x][y]=dirt
