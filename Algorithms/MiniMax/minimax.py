@@ -13,7 +13,7 @@ class MiniMax:
         score=0
         for i in range(len(dirts_array)):
             dirt=dirts_array[i]
-            print("Dirts array: ",dirts_array)
+            # print("Dirts array: ",dirts_array)
             dirtX=dirt[0]
             dirtY=dirt[1]
             #vacuum_position is a tuple in the form of (x,y)
@@ -64,32 +64,42 @@ class MiniMax:
             self.dirts_object.addDirtXY(newX,newY)
     def minimax(self,maximizing_player,depth,cleaning_agent_tile,dirt_agent_tile,tiles_array,dirts_array,count):
         if(depth==0):
-            return self.getScore(cleaning_agent_tile,dirts_array),cleaning_agent_tile
+            print("end: ",self.getScore(cleaning_agent_tile,dirts_array),"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
+            return self.getScore(cleaning_agent_tile,dirts_array),None,None
         if(not maximizing_player):
-            minEval= 999999
+            minEval= 9999999999
+            tilee=cleaning_agent_tile
             cleaning_agent_neighbours = self.getNeighbours(cleaning_agent_tile,tiles_array)
             for neighbour in cleaning_agent_neighbours:
+                
                 cleaningAgentNextTile=tiles_array[neighbour.x][neighbour.y]
-                eval,tile= self.minimax(True,depth-1,cleaningAgentNextTile,dirt_agent_tile,tiles_array,dirts_array,count)
+                
+                eval= self.minimax(True,depth-1,cleaningAgentNextTile,dirt_agent_tile,tiles_array,dirts_array,count)[0]
                 if eval<minEval:
-                    return eval,tile
+                    minEval=eval
+                    tilee=cleaningAgentNextTile
                 else:
-                    return minEval,cleaning_agent_tile
+                    pass
+            return minEval,tilee,dirt_agent_tile
         if(maximizing_player):
-            maxEval=-99999
+            maxEval=-9999999999
+            dtile=dirt_agent_tile
             dirt_agent_neighbours = self.getNeighbours(dirt_agent_tile,tiles_array)
             for neighbour in dirt_agent_neighbours:
                 dirtAgentNextPos=(neighbour.x,neighbour.y)
                 dirtAgentNextTile=tiles_array[neighbour.x][neighbour.y]
+                
                 if count%3==0:
                     d=(Dirt(dirtAgentNextPos[0],dirtAgentNextPos[1]))
                     dirts_array.append((d.x,d.y))
                     tiles_array[dirtAgentNextPos[0]][dirtAgentNextPos[1]].isDirty=True
-                eval,tilee=self.minimax(False,depth-1,cleaning_agent_tile,dirtAgentNextTile,tiles_array,dirts_array,count+1)
+                eval=self.minimax(False,depth-1,cleaning_agent_tile,dirtAgentNextTile,tiles_array,dirts_array,count+1)[0]
                 if eval>maxEval: 
-                    return eval,cleaning_agent_tile
+                    maxEval=eval
+                    dtile=dirtAgentNextTile
                 else:
-                    return maxEval,cleaning_agent_tile
+                    pass
+            return maxEval,cleaning_agent_tile,dtile
 
 
 

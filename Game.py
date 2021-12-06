@@ -275,7 +275,7 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile=MiniMaxS.minimax(False,7,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        score,tile,tile1=MiniMaxS.minimax(False,3,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         if self.Tiles.tiles[tile.x][tile.y].isDirty:
             self.Dirts.dirts[tile.x][tile.y].kill()
             self.Dirts.dirts[tile.x][tile.y]=Dirt()
@@ -422,8 +422,8 @@ class Game:
             n=rnd.randint(0,len(neighbours)-1)
             nextPosX=neighbours[n].x
             nextPosY=neighbours[n].y
-            print(neighbours)
-            print("n: ",n)
+            # print(neighbours)
+            # print("n: ",n)
             prevPosX=self.DirtAgent.x
             prevPosY=self.DirtAgent.y
             #added to the list of visited positions
@@ -436,7 +436,7 @@ class Game:
 
             dx=nextPosX-prevPosX
             dy=nextPosY-prevPosY
-            print(dx," , ",dy)
+            # print(dx," , ",dy)
             m=rnd.randint(0,1)
             
             if( self.DirtAgent.count%3==0):
