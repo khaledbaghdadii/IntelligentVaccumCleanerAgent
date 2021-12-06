@@ -72,7 +72,7 @@ class MiniMax:
                 cleaningAgentNextTile=tiles_array[neighbour.x][neighbour.y]
                 eval,tile= self.minimax(True,depth-1,cleaningAgentNextTile,dirt_agent_tile,tiles_array,dirts_array,count)
                 if eval<minEval:
-                    return eval,cleaningAgentNextTile
+                    return eval,tile
                 else:
                     return minEval,cleaning_agent_tile
         if(maximizing_player):
