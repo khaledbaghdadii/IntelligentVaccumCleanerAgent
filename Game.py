@@ -275,14 +275,15 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile,tile1=MiniMaxS.minimax(False,3,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         if self.Tiles.tiles[tile.x][tile.y].isDirty:
             self.Dirts.dirts[tile.x][tile.y].kill()
             self.Dirts.dirts[tile.x][tile.y]=Dirt()
+            self.Tiles.tiles[tile.x][tile.y].isDirty=False
             if ((tile.x,tile.y) in self.Dirts.dirts_array):
                 index=self.Dirts.dirts_array.index((tile.x,tile.y))
                 self.Dirts.dirts_array.pop(index)
-                self.Tiles.tiles[tile.x][tile.y].isDirty=False
+                
         return score,tile
         
 

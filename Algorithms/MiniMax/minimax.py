@@ -11,6 +11,7 @@ class MiniMax:
         return abs(y2-y1)+abs(x2-x1)
     def getScore(self,cleaningAgentTile,dirts_array):
         score=0
+        agent_on_dirt=False
         for i in range(len(dirts_array)):
             dirt=dirts_array[i]
             # print("Dirts array: ",dirts_array)
@@ -19,8 +20,10 @@ class MiniMax:
             #vacuum_position is a tuple in the form of (x,y)
             vacuumX=cleaningAgentTile.x 
             vacuumY=cleaningAgentTile.y
+            if(self.getDistance(vacuumX,vacuumY,dirtX,dirtY)==0):
+                agent_on_dirt=True
             score=score+self.getDistance(vacuumX,vacuumY,dirtX,dirtY)
-        return score
+        return score,agent_on_dirt
     def getMin(self,arr):
         min=1234865
         index=0
@@ -64,8 +67,8 @@ class MiniMax:
             self.dirts_object.addDirtXY(newX,newY)
     def minimax(self,maximizing_player,depth,cleaning_agent_tile,dirt_agent_tile,tiles_array,dirts_array,count):
         if(depth==0):
-            print("end: ",self.getScore(cleaning_agent_tile,dirts_array),"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
-            return self.getScore(cleaning_agent_tile,dirts_array),None,None
+            print("end: ",self.getScore(cleaning_agent_tile,dirts_array)[0],"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
+            return self.getScore(cleaning_agent_tile,dirts_array)[0],None,None
         if(not maximizing_player):
             minEval= 9999999999
             tilee=cleaning_agent_tile
@@ -73,7 +76,9 @@ class MiniMax:
             for neighbour in cleaning_agent_neighbours:
                 
                 cleaningAgentNextTile=tiles_array[neighbour.x][neighbour.y]
-                
+                if (neighbour.x,neighbour.y) in dirts_array:
+                    index= dirts_array.index((neighbour.x,neighbour.y))
+                    dirts_array.pop(index)
                 eval= self.minimax(True,depth-1,cleaningAgentNextTile,dirt_agent_tile,tiles_array,dirts_array,count)[0]
                 if eval<minEval:
                     minEval=eval
@@ -99,7 +104,7 @@ class MiniMax:
                     dtile=dirtAgentNextTile
                 else:
                     pass
-            return maxEval,cleaning_agent_tile,dtile
+            return maxEval,None,None
 
 
 
