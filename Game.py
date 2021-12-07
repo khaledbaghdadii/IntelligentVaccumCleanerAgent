@@ -155,7 +155,7 @@ class Game:
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         for i in range(30):
-                            self.startDirtAgentRandom()
+                            self.startSmartDirtAgent()
                             score,tile=self.cleanMiniMax()
                             self.VacuumCleaner.move(tile.x-self.VacuumCleaner.x,tile.y-self.VacuumCleaner.y)
                             self.draw()
@@ -452,6 +452,19 @@ class Game:
 
             self.draw()
             sleep(self.WAIT_TIME)
+    def startSmartDirtAgent(self):
+        MiniMaxS=MiniMax()
+        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
+        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
+        score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        self.DirtAgent.move(tile1.x-self.DirtAgent.x,tile1.y-self.DirtAgent.y)
+        if ((tile1.x,tile1.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
+                self.Dirts.addDirtXY(tile1.x,tile1.y,True)
+                self.Tiles.addDirtXY(tile1.x,tile1.y,True)
+
+        self.DirtAgent.count+=1
+                
+        return score,tile
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)

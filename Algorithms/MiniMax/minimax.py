@@ -104,7 +104,7 @@ class MiniMax:
                     dtile=dirtAgentNextTile
                 else:
                     pass
-            return maxEval,None,None
+            return maxEval,None,dtile
 
 
 
