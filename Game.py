@@ -155,7 +155,7 @@ class Game:
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         for i in range(30):
-                            self.startSmartDirtAgent()
+                            self.startDirtAgentRandom()
                             score,tile=self.cleanMiniMax()
                             self.VacuumCleaner.move(tile.x-self.VacuumCleaner.x,tile.y-self.VacuumCleaner.y)
                             self.draw()
@@ -275,7 +275,8 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        score,tile,tile1=MiniMaxS.alphabeta(False,7,-float('inf'),float('inf'),cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        #score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         if self.Tiles.tiles[tile.x][tile.y].isDirty:
             self.Dirts.dirts[tile.x][tile.y].kill()
             self.Dirts.dirts[tile.x][tile.y]=Dirt()
@@ -456,7 +457,8 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        score,tile,tile1=MiniMaxS.alphabeta(True,5,-float('inf'),float('inf'),cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        #score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         self.DirtAgent.move(tile1.x-self.DirtAgent.x,tile1.y-self.DirtAgent.y)
         if ((tile1.x,tile1.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
                 self.Dirts.addDirtXY(tile1.x,tile1.y,True)

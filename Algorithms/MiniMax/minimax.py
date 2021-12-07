@@ -70,7 +70,7 @@ class MiniMax:
             print("end: ",self.getScore(cleaning_agent_tile,dirts_array)[0],"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
             return self.getScore(cleaning_agent_tile,dirts_array)[0],None,None
         if(not maximizing_player):
-            minEval= 9999999999
+            minEval= float('inf')
             tilee=cleaning_agent_tile
             cleaning_agent_neighbours = self.getNeighbours(cleaning_agent_tile,tiles_array)
             for neighbour in cleaning_agent_neighbours:
@@ -87,7 +87,7 @@ class MiniMax:
                     pass
             return minEval,tilee,dirt_agent_tile
         if(maximizing_player):
-            maxEval=-9999999999
+            maxEval=-float('inf')
             dtile=dirt_agent_tile
             dirt_agent_neighbours = self.getNeighbours(dirt_agent_tile,tiles_array)
             for neighbour in dirt_agent_neighbours:
@@ -104,6 +104,48 @@ class MiniMax:
                     dtile=dirtAgentNextTile
                 else:
                     pass
+            return maxEval,None,dtile
+    def alphabeta(self,maximizing_player,depth,alpha,beta,cleaning_agent_tile,dirt_agent_tile,tiles_array,dirts_array,count):
+        if(depth==0):
+            print("end: ",self.getScore(cleaning_agent_tile,dirts_array)[0],"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
+            return self.getScore(cleaning_agent_tile,dirts_array)[0],None,None
+        if(not maximizing_player):
+            minEval= float('inf')
+            tilee=cleaning_agent_tile
+            cleaning_agent_neighbours = self.getNeighbours(cleaning_agent_tile,tiles_array)
+            for neighbour in cleaning_agent_neighbours:
+                
+                cleaningAgentNextTile=tiles_array[neighbour.x][neighbour.y]
+                if (neighbour.x,neighbour.y) in dirts_array:
+                    index= dirts_array.index((neighbour.x,neighbour.y))
+                    dirts_array.pop(index)
+                eval= self.alphabeta(True,depth-1,alpha,beta,cleaningAgentNextTile,dirt_agent_tile,tiles_array,dirts_array,count)[0]
+                if eval<minEval:
+                    minEval=eval
+                    tilee=cleaningAgentNextTile
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+            return minEval,tilee,dirt_agent_tile
+        if(maximizing_player):
+            maxEval=-float('inf')
+            dtile=dirt_agent_tile
+            dirt_agent_neighbours = self.getNeighbours(dirt_agent_tile,tiles_array)
+            for neighbour in dirt_agent_neighbours:
+                dirtAgentNextPos=(neighbour.x,neighbour.y)
+                dirtAgentNextTile=tiles_array[neighbour.x][neighbour.y]
+                
+                if count%3==0:
+                    d=(Dirt(dirtAgentNextPos[0],dirtAgentNextPos[1]))
+                    dirts_array.append((d.x,d.y))
+                    tiles_array[dirtAgentNextPos[0]][dirtAgentNextPos[1]].isDirty=True
+                eval=self.alphabeta(False,depth-1,alpha,beta,cleaning_agent_tile,dirtAgentNextTile,tiles_array,dirts_array,count+1)[0]
+                if eval>maxEval: 
+                    maxEval=eval
+                    dtile=dirtAgentNextTile
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
             return maxEval,None,dtile
 
 
