@@ -21,6 +21,7 @@ from Algorithms.Djikstra import Djikstra
 from Algorithms.Astar import Astar
 from Algorithms.TSP import generatePathsList
 from Algorithms.MiniMax.minimax import MiniMax
+from copy import deepcopy
 
 class Game:
     def __init__(self,n,m):
@@ -148,16 +149,20 @@ class Game:
                     self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
                     self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
+                    print(self.Dirts.dirts_array)
                     if(self.agent_checkbox):
                         self.killVacuumCleaner()
                         self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
+                        self.setSpeed()
                         for i in range(30):
-                            self.startDirtAgentRandom()
+                            
+                            self.startSmartDirtAgent()
                             score,tile=self.cleanMiniMax()
                             self.VacuumCleaner.move(tile.x-self.VacuumCleaner.x,tile.y-self.VacuumCleaner.y)
+                            pygame.event.pump()
                             self.draw()
 
                         # self.setSpeed()
@@ -232,6 +237,7 @@ class Game:
                         
                         self.draw()
                         sleep(self.WAIT_TIME)
+                        pygame.event.pump()
                         previousTile=tile
         self.moves_label.setText("No.  Moves: "+str(bfs.moves-1))
         self.explored_label.setText("No. Explored: "+str(bfs.num_explored))
@@ -263,6 +269,7 @@ class Game:
             self.moves_label.setText("No.  Moves: "+str(moves))
             self.explored_label.setText("No.  Explored Nodes: "+str(num_explored))
             self.draw()
+            pygame.event.pump()
             sleep(self.WAIT_TIME)
     
 
@@ -275,15 +282,18 @@ class Game:
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile,tile1=MiniMaxS.alphabeta(False,7,-float('inf'),float('inf'),cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
-        #score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
-        if self.Tiles.tiles[tile.x][tile.y].isDirty:
-            self.Dirts.dirts[tile.x][tile.y].kill()
-            self.Dirts.dirts[tile.x][tile.y]=Dirt()
-            self.Tiles.tiles[tile.x][tile.y].isDirty=False
-            if ((tile.x,tile.y) in self.Dirts.dirts_array):
-                index=self.Dirts.dirts_array.index((tile.x,tile.y))
+        if self.Tiles.tiles[cleaningAgentTile.x][cleaningAgentTile.y].isDirty:
+            self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y].kill()
+            self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y]=Dirt()
+            self.Tiles.tiles[cleaningAgentTile.x][cleaningAgentTile.y].isDirty=False
+            if ((cleaningAgentTile.x,cleaningAgentTile.y) in self.Dirts.dirts_array):
+                index=self.Dirts.dirts_array.index((cleaningAgentTile.x,cleaningAgentTile.y))
                 self.Dirts.dirts_array.pop(index)
+        print("dirts array passed",self.Dirts.dirts_array)
+        d_copy=deepcopy(self.Dirts.dirts_array)
+        score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,d_copy,self.DirtAgent.count)
+        #score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        
                 
         return score,tile
         
@@ -420,49 +430,54 @@ class Game:
                     break
             if(not neighbourAvailable):
                 prevPos=[]
-
-            n=rnd.randint(0,len(neighbours)-1)
-            nextPosX=neighbours[n].x
-            nextPosY=neighbours[n].y
-            # print(neighbours)
-            # print("n: ",n)
-            prevPosX=self.DirtAgent.x
-            prevPosY=self.DirtAgent.y
-            #added to the list of visited positions
-            prevPos.append((prevPosX,prevPosY))
-            #make sure the next position is not visted before
-            while((nextPosX,nextPosY) in prevPos):
+            if(len(neighbours)>=1):
                 n=rnd.randint(0,len(neighbours)-1)
                 nextPosX=neighbours[n].x
                 nextPosY=neighbours[n].y
+                # print(neighbours)
+                # print("n: ",n)
+                prevPosX=self.DirtAgent.x
+                prevPosY=self.DirtAgent.y
+                #added to the list of visited positions
+                prevPos.append((prevPosX,prevPosY))
+                #make sure the next position is not visted before
+                while((nextPosX,nextPosY) in prevPos):
+                    n=rnd.randint(0,len(neighbours)-1)
+                    nextPosX=neighbours[n].x
+                    nextPosY=neighbours[n].y
 
-            dx=nextPosX-prevPosX
-            dy=nextPosY-prevPosY
-            # print(dx," , ",dy)
-            m=rnd.randint(0,1)
-            
-            if( self.DirtAgent.count%3==0):
-                    self.Dirts.addDirtXY(prevPosX,prevPosY,True)
-                    self.Tiles.addDirtXY(prevPosX,prevPosY,True)
-            else:
-                    pass
-            self.DirtAgent.move(dx,dy)
-            self.DirtAgent.count+=1
-            
-            
+                dx=nextPosX-prevPosX
+                dy=nextPosY-prevPosY
+                # print(dx," , ",dy)
+                m=rnd.randint(0,1)
+                
+                if( self.DirtAgent.count%3==0):
+                        self.Dirts.addDirtXY(prevPosX,prevPosY,True)
+                        self.Tiles.addDirtXY(prevPosX,prevPosY,True)
+                else:
+                        pass
+                self.DirtAgent.move(dx,dy)
+                self.DirtAgent.count+=1
+                
+                
 
-            self.draw()
-            sleep(self.WAIT_TIME)
+                self.draw()
+                sleep(self.WAIT_TIME)
     def startSmartDirtAgent(self):
+        print("Before moving firts array is :",self.Dirts.dirts_array)
         MiniMaxS=MiniMax()
         cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
         dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        score,tile,tile1=MiniMaxS.alphabeta(True,5,-float('inf'),float('inf'),cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
+        if ((dirtAgentTile.x,dirtAgentTile.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
+                self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
+                self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
+        print("After adding dirts: ,",self.Dirts.dirts_array)
+        d_copy=  deepcopy(self.Dirts.dirts_array)
+        score,tile,tile1=MiniMaxS.minimax(True,3,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,d_copy,self.DirtAgent.count)
         #score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         self.DirtAgent.move(tile1.x-self.DirtAgent.x,tile1.y-self.DirtAgent.y)
-        if ((tile1.x,tile1.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
-                self.Dirts.addDirtXY(tile1.x,tile1.y,True)
-                self.Tiles.addDirtXY(tile1.x,tile1.y,True)
+        print("After moving firts array is :",self.Dirts.dirts_array)
+        
 
         self.DirtAgent.count+=1
                 

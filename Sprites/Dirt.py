@@ -57,12 +57,10 @@ class Dirts:
             dirt = Dirt(x,y,self.TILE_WIDTH,self.TILE_HEIGHT)
             self.dirts[x][y]=dirt
             self.dirts_array.append((x,y))
-    def removeDirtXY(self,x,y):
-        dirt = Dirt()
-        self.dirts[x][y]=dirt
 
     def clearDirts(self):
         self.dirts=[[Dirt() for x in range(self.m)] for y in range(self.n)]
+        self.dirts_array=[]
 
     def changeDimensions(self,n,m):
         self.dirts=self.TILE_WIDTH=(constants.SCREEN_WIDTH)/n
