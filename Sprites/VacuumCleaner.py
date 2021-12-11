@@ -9,6 +9,8 @@ class VacuumCleaner(pygame.sprite.Sprite):
         self.TILE_WIDTH= TILE_WIDTH
         self.TILE_HEIGHT= TILE_HEIGHT
         self.filepath = "images/vacuum.png"
+        self.dirts_cleaned=[]
+        self.total_num_cleaned=0
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:

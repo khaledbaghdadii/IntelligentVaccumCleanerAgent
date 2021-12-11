@@ -13,6 +13,8 @@ class DirtAgent(pygame.sprite.Sprite):
         self.TILE_HEIGHT= TILE_HEIGHT
         self.count=0
         self.filepath = "images/cat.png"
+        self.dirts_of_agent=[]
+        self.remaining_uncleaned=0
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:
