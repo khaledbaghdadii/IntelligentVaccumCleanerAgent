@@ -165,10 +165,6 @@ class PartiallyObservable:
         #             for j in range(0,currentTile.y):
         #                 self.tilesArray[i][j].possibleVisible = False
 
-
-
-
-
         return neighbours
 
     def getDirts(self):

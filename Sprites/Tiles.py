@@ -14,7 +14,8 @@ class Tile(pygame.sprite.Sprite):
         self.has_walls_down=False
         self.has_walls=False
         self.isDirty=False
-
+        self.isVisited = False #notion of memory
+        self.possibleVisible=True
         self.filepath = "images/tile.png"
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
