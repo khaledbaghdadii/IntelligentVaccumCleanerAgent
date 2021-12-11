@@ -1,3 +1,4 @@
+
 import pygame
 import random as rnd
 from pygame import color
@@ -22,7 +23,7 @@ from Algorithms.TSP import generatePathsList
 from Algorithms.MiniMax.minimax import MiniMax
 from copy import deepcopy
 
-class Game:
+class Game2:
     def __init__(self,n,m):
         self.n=n
         self.m=m
@@ -30,7 +31,8 @@ class Game:
         self.Tiles=Tiles(n,m)
         self.Dirts=Dirts(n,m)
         self.Walls = Walls(n,m)
-        self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+        self.VacuumCleaners= [VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)]
+        self.DirtAgents=[DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1),DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)]
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
         self.all_sprites = pygame.sprite.Group()
@@ -74,12 +76,12 @@ class Game:
         
         for wall in self.Walls.walls:
             self.all_sprites.add(wall)
-        self.VacuumCleaner.kill()
-        self.all_sprites.add(self.VacuumCleaner)
-        self.DirtAgent.kill()
-        self.all_sprites.add(self.DirtAgent)
-        self.DirtAgent2.kill()
-        self.all_sprites.add(self.DirtAgent2)
+        for VacuumCleaner in self.VacuumCleaners:
+            VacuumCleaner.kill()
+            self.all_sprites.add(VacuumCleaner)
+        for DirtAgent in self.DirtAgents:
+            DirtAgent.kill()
+            self.all_sprites.add(DirtAgent)
     def killWalls(self):
         for wall in self.Walls.walls:
             wall.kill()
@@ -88,7 +90,10 @@ class Game:
             for dirt in dirtss:
                 dirt.kill()
     def killVacuumCleaner(self):
-        self.VacuumCleaner.kill()
+        for VacuumCleaner in self.VacuumCleaners:
+
+            VacuumCleaner.kill()
+    
     def killTiles(self):
         for tiles in self.Tiles.tiles:
             for tile in tiles:
@@ -154,19 +159,20 @@ class Game:
                     print(self.Dirts.dirts_array)
                     if(self.agent_checkbox):
                         self.killVacuumCleaner()
-                        self.VacuumCleaner.addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
+                        self.VacuumCleaners[0].addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
                         for i in range(30):
+                            for i in range(len(self.DirtAgents)):
+                                self.startSmartDirtAgent1(i)
                             
-                            self.startSmartDirtAgent1()
-                            self.startSmartDirtAgent2()
-                            score,tile=self.cleanMiniMax()
-                            self.VacuumCleaner.move(tile.x-self.VacuumCleaner.x,tile.y-self.VacuumCleaner.y)
-                            pygame.event.pump()
-                            self.draw()
+                            for i in range(len(self.VacuumCleaners)):
+                                score,tile=self.cleanMiniMax(i)
+                                self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
+                                pygame.event.pump()
+                                self.draw()
 
                         # self.setSpeed()
                         # # self.clean(0,0,self.Tiles.tiles,self.Tiles)
@@ -185,107 +191,12 @@ class Game:
                         self.randomWalls()
                     self.draw()
 
-    def clean(self,x,y,tiles,tiles_object):
-        if self.algorithm_list.main=="Modified BFS":
-            self.ALGORITHM="Modified BFS"
-            self.cleanBFSVariants(x,y,tiles)
 
-        elif self.algorithm_list.main=="TSP+Best First Search":
-            self.ALGORITHM="TSP+Best First Search"
-            self.cleanTSP(tiles_object)
-            
-        elif self.algorithm_list.main=="Djikstra":
-            self.ALGORITHM="Djikstra"
-            self.cleanBFSVariants(x,y,tiles)
-        
-        elif self.algorithm_list.main=="A*":
-            self.ALGORITHM="A*"
-            self.cleanBFSVariants(x,y,tiles)
-            
-        else:
-            self.cleanBFSVariants(x,y,tiles)
-    def cleanBFSVariants(self,x,y,tiles):
-        if(self.ALGORITHM=="Modified BFS"):
-            bfs=BFS(tiles)
-        elif(self.ALGORITHM=="Djikstra"):
-            bfs=Djikstra(tiles)
-        elif(self.ALGORITHM=="A*"):
-            bfs=Astar(tiles)
-        else:
-            bfs=BFS(tiles)
-        
-        bfs.clean(self.VacuumCleaner.x,self.VacuumCleaner.y)
-        dirtsArray= bfs.getDirts()
-        if (self.VacuumCleaner.x,self.VacuumCleaner.y) in dirtsArray:
-            self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y].kill()
-            self.Dirts.dirts[self.VacuumCleaner.x][self.VacuumCleaner.y]=Dirt()
-        for i in bfs.path:
-            if(len(i)!=0):
-                previousTile=i[0]
-                if (previousTile.x,previousTile.y) in dirtsArray:
-                    self.Dirts.dirts[previousTile.x][previousTile.y].kill()
-                    self.Dirts.dirts[previousTile.x][previousTile.y]=Dirt()
-                    
-
-                if(len(i)>1):
-                    for tile in i[1:]:
-                        dx=tile.x-previousTile.x
-                        dy=tile.y-previousTile.y
-                        currentTile=(tile.x,tile.y)
-                        if(currentTile in dirtsArray):
-                            self.Dirts.dirts[tile.x][tile.y].kill()
-                            self.Dirts.dirts[tile.x][tile.y]=Dirt()
-                        # call move vacuum cleaner method
-                        self.VacuumCleaner.move(dx,dy)
-                        
-                        self.draw()
-                        sleep(self.WAIT_TIME)
-                        pygame.event.pump()
-                        previousTile=tile
-        self.moves_label.setText("No.  Moves: "+str(bfs.moves-1))
-        self.explored_label.setText("No. Explored: "+str(bfs.num_explored))
-    def cleanTSP(self,tiles_object):
-        paths,num_explored,moves=generatePathsList(tiles_object,self.VacuumCleaner)
-        tiles=[]
-        for path in paths:
-            for tileXY in path:
-                tileX=tileXY[0]
-                tileY=tileXY[1]
-                tile=self.Tiles.tiles[tileX][tileY]
-                tiles.append(tile)
-        vacuumX=self.VacuumCleaner.x
-        vacuumY=self.VacuumCleaner.y
-        if self.Tiles.tiles[vacuumX][vacuumY].isDirty:
-            self.Dirts.dirts[vacuumX][vacuumY].kill()
-            self.Dirts.dirts[vacuumX][vacuumY]=Dirt()
-            self.Tiles.tiles[vacuumX][vacuumY].isDirty=False
-        for i in range(len(tiles)-1):
-            currentTile=tiles[i]
-            nextTile=tiles[i+1]
-            dx=nextTile.x-currentTile.x
-            dy=nextTile.y-currentTile.y
-            self.VacuumCleaner.move(dx,dy)
-            if nextTile.isDirty:
-                self.Dirts.dirts[nextTile.x][nextTile.y].kill()
-                self.Dirts.dirts[nextTile.x][nextTile.y]=Dirt()
-                self.Tiles.tiles[nextTile.x][nextTile.y].isDirty=False
-            self.moves_label.setText("No.  Moves: "+str(moves))
-            self.explored_label.setText("No.  Explored Nodes: "+str(num_explored))
-            self.draw()
-            pygame.event.pump()
-            sleep(self.WAIT_TIME)
-    
-
-                    
-
-
-
-        pass
-    def cleanMiniMax(self):
+    def cleanMiniMax(self,i):
         MiniMaxS=MiniMax()
-        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
-        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        dirtAgent2Tile= self.Tiles.tiles[self.DirtAgent2.x][self.DirtAgent2.y]
+        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaners[i].x][self.VacuumCleaners[i].y]
+        dirtAgentTile= self.Tiles.tiles[self.DirtAgents[0].x][self.DirtAgents[0].y]
+        dirtAgent2Tile= self.Tiles.tiles[self.DirtAgents[1].x][self.DirtAgents[1].y]
         if self.Tiles.tiles[cleaningAgentTile.x][cleaningAgentTile.y].isDirty:
             self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y].kill()
             self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y]=Dirt()
@@ -295,7 +206,7 @@ class Game:
                 self.Dirts.dirts_array.pop(index)
         print("dirts array passed",self.Dirts.dirts_array)
         d_copy=deepcopy(self.Dirts.dirts_array)
-        score,tile,tile1,til2=MiniMaxS.minimax2(False,6,cleaningAgentTile,dirtAgentTile,dirtAgent2Tile,1,self.Tiles.tiles,d_copy,self.DirtAgent.count,self.DirtAgent2.count)
+        score,tile,tile1,til2=MiniMaxS.minimax2(False,6,cleaningAgentTile,dirtAgentTile,dirtAgent2Tile,1,self.Tiles.tiles,d_copy,self.DirtAgents[0].count,self.DirtAgents[1].count)
         #score,tile,tile1=MiniMaxS.minimax(False,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
         
                 
@@ -335,7 +246,9 @@ class Game:
             self.Tiles=Tiles(n,m)
             self.Dirts=Dirts(n,m)
             self.Walls=Walls(n,m)
-            self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+            for i,V in enumerate(self.VacuumCleaners):
+
+                self.VacuumCleaners[i]= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
             self.draw()
         except:
             self.input_txt=InputBox(200,650,80,30)
@@ -346,7 +259,8 @@ class Game:
             self.Walls=Walls(self.n,self.m)
             self.moves_label.setText("No.  Moves: 0")
             self.explored_label.setText("No.  Explored Nodes: 0")
-            self.VacuumCleaner= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+            for i in range(len(self.VacuumCleaners)):
+                self.VacuumCleaner[i]= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
 
             self.draw()
     def randomWalls(self):
@@ -390,15 +304,17 @@ class Game:
         self.killVacuumCleaner()
         self.Tiles.clearDirts()
         self.Dirts.clearDirts()
-        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
+        for i in range(len(self.VacuumCleaners)):
+            self.VacuumCleaners[i]=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaners[i].x,self.VacuumCleaners[i].y)
         self.draw()
     def clearWalls(self):
         self.killWalls()
         self.killVacuumCleaner()
         self.Tiles.clearWalls()
         self.Walls.clearWalls()
-        self.VacuumCleaner=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaner.x,self.VacuumCleaner.y)
-        
+        for i in range(len(self.VacuumCleaners)):
+            self.VacuumCleaners[i]=VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,self.VacuumCleaners[i].x,self.VacuumCleaners[i].y)
+
 
     def getNeighbours(self,currentTile,tilesArray):
         neighbours = []
@@ -423,10 +339,10 @@ class Game:
             #in case it hits the max borders, it is handled in initializing the borders upon creation
             neighbours.append(tilesArray[a][b])
         return neighbours
-    def startDirtAgentRandom(self):
+    def startDirtAgentRandom(self,i):
         prevPos=[]
         for i in range(1):
-            neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y],self.Tiles.tiles)
+            neighbours=self.getNeighbours(self.Tiles.tiles[self.DirtAgents[i].x][self.DirtAgents[i].y],self.Tiles.tiles)
             neighbourAvailable=False
             for j in range(len(neighbours)):
                 if not (neighbours[j].x,neighbours[j].y) in prevPos:
@@ -440,8 +356,8 @@ class Game:
                 nextPosY=neighbours[n].y
                 # print(neighbours)
                 # print("n: ",n)
-                prevPosX=self.DirtAgent.x
-                prevPosY=self.DirtAgent.y
+                prevPosX=self.DirtAgents[i].x
+                prevPosY=self.DirtAgents[i].y
                 #added to the list of visited positions
                 prevPos.append((prevPosX,prevPosY))
                 #make sure the next position is not visted before
@@ -455,31 +371,31 @@ class Game:
                 # print(dx," , ",dy)
                 m=rnd.randint(0,1)
                 
-                if( self.DirtAgent.count%3==0):
+                if( self.DirtAgents[i].count%3==0):
                         self.Dirts.addDirtXY(prevPosX,prevPosY,True)
                         self.Tiles.addDirtXY(prevPosX,prevPosY,True)
                 else:
                         pass
-                self.DirtAgent.move(dx,dy)
-                self.DirtAgent.count+=1
+                self.DirtAgents[i].move(dx,dy)
+                self.DirtAgents[i].count+=1
                 
                 
 
                 self.draw()
                 sleep(self.WAIT_TIME)
-    def startSmartDirtAgent(self):
+    def startSmartDirtAgent(self,i):
         print("Before moving firts array is :",self.Dirts.dirts_array)
         MiniMaxS=MiniMax()
-        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
-        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        if ((dirtAgentTile.x,dirtAgentTile.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
+        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaners[0].x][self.VacuumCleaners[0].y]
+        dirtAgentTile= self.Tiles.tiles[self.DirtAgents[i].x][self.DirtAgents[i].y]
+        if ((dirtAgentTile.x,dirtAgentTile.y) not in self.Dirts.dirts_array and self.DirtAgents[i].count%3==0):
                 self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
         print("After adding dirts: ,",self.Dirts.dirts_array)
         d_copy=  deepcopy(self.Dirts.dirts_array)
-        score,tile,tile1=MiniMaxS.minimax(True,3,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,d_copy,self.DirtAgent.count)
+        score,tile,tile1=MiniMaxS.minimax(True,3,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,d_copy,self.DirtAgents[i].count)
         #score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
-        self.DirtAgent.move(tile1.x-self.DirtAgent.x,tile1.y-self.DirtAgent.y)
+        self.DirtAgents[i].move(tile1.x-self.DirtAgents[i].x,tile1.y-self.DirtAgents[i].y)
         print("After moving firts array is :",self.Dirts.dirts_array)
         
 
@@ -487,46 +403,26 @@ class Game:
                 
         return score,tile
 
-    def startSmartDirtAgent1(self):
+    def startSmartDirtAgent1(self,i):
         print("Before moving firts array is :",self.Dirts.dirts_array)
         MiniMaxS=MiniMax()
-        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
-        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        dirtAgent2Tile= self.Tiles.tiles[self.DirtAgent2.x][self.DirtAgent2.y]
-        if ((dirtAgentTile.x,dirtAgentTile.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
-                self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
-                self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
+        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaners[0].x][self.VacuumCleaners[0].y]
+        dirtAgentTiles= [self.Tiles.tiles[self.DirtAgents[0].x][self.DirtAgents[0].y], self.Tiles.tiles[self.DirtAgents[1].x][self.DirtAgents[1].y]]
+        if ((dirtAgentTiles[i].x,dirtAgentTiles[i].y) not in self.Dirts.dirts_array and self.DirtAgents[i].count%3==0):
+                self.Dirts.addDirtXY(dirtAgentTiles[i].x,dirtAgentTiles[i].y,True)
+                self.Tiles.addDirtXY(dirtAgentTiles[i].x,dirtAgentTiles[i].y,True)
         print("After adding dirts: ,",self.Dirts.dirts_array)
         d_copy=  deepcopy(self.Dirts.dirts_array)
-        score,tile,tile1,tile2=MiniMaxS.minimax2(True,4,cleaningAgentTile,dirtAgentTile,dirtAgent2Tile,1,self.Tiles.tiles,d_copy,self.DirtAgent.count,self.DirtAgent2.count)
+        score,tile,tile1,tile2=MiniMaxS.minimax2(True,4,cleaningAgentTile,dirtAgentTiles[0],dirtAgentTiles[1],i+1,self.Tiles.tiles,d_copy,self.DirtAgents[0].count,self.DirtAgents[1].count)
+        if(i==0):
         #score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
-        self.DirtAgent.move(tile1.x-self.DirtAgent.x,tile1.y-self.DirtAgent.y)
+            self.DirtAgents[i].move(tile1.x-self.DirtAgents[i].x,tile1.y-self.DirtAgents[i].y)
+        if(i==1):
+            self.DirtAgents[i].move(tile2.x-self.DirtAgents[i].x,tile2.y-self.DirtAgents[i].y)
         print("After moving firts array is :",self.Dirts.dirts_array)
         
 
-        self.DirtAgent.count+=1
-    def startSmartDirtAgent2(self):
-        print("Before moving firts array is :",self.Dirts.dirts_array)
-        MiniMaxS=MiniMax()
-        cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaner.x][self.VacuumCleaner.y]
-        dirtAgentTile= self.Tiles.tiles[self.DirtAgent.x][self.DirtAgent.y]
-        dirtAgent2Tile= self.Tiles.tiles[self.DirtAgent2.x][self.DirtAgent2.y]
-        if ((dirtAgent2Tile.x,dirtAgent2Tile.y) not in self.Dirts.dirts_array and self.DirtAgent.count%3==0):
-                self.Dirts.addDirtXY(dirtAgent2Tile.x,dirtAgent2Tile.y,True)
-                self.Tiles.addDirtXY(dirtAgent2Tile.x,dirtAgent2Tile.y,True)
-        print("After adding dirts: ,",self.Dirts.dirts_array)
-        d_copy=  deepcopy(self.Dirts.dirts_array)
-        score,tile,tile1,tile2=MiniMaxS.minimax2(True,4,cleaningAgentTile,dirtAgentTile,dirtAgent2Tile,2,self.Tiles.tiles,d_copy,self.DirtAgent.count,self.DirtAgent2.count)
-        #score,tile,tile1=MiniMaxS.minimax(True,5,cleaningAgentTile,dirtAgentTile,self.Tiles.tiles,self.Dirts.dirts_array,self.DirtAgent.count)
-        self.DirtAgent2.move(tile2.x-self.DirtAgent2.x,tile2.y-self.DirtAgent2.y)
-        print("After moving firts array is :",self.Dirts.dirts_array)
-        
-
-        self.DirtAgent2.count+=1
-                
-        return score,tile
-                
-        return score,tile
+        self.DirtAgents[i].count+=1
 
     def main(self):
         self.clock.tick(constants.FRAME_RATE)
