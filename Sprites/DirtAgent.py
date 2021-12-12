@@ -1,9 +1,6 @@
 import pygame
 import constants
 import math
-from Sprites.Dirt import Dirts
-from Sprites.Tiles import Tiles
-from random import randint
 class DirtAgent(pygame.sprite.Sprite):
     def __init__(self,TILE_WIDTH,TILE_HEIGHT,x=0,y=0):
         super().__init__()
@@ -12,7 +9,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.TILE_WIDTH= TILE_WIDTH
         self.TILE_HEIGHT= TILE_HEIGHT
         self.count=0
-        self.filepath = "images/cat.png"
+        self.filepath = "images/dog1.png"
         self.dirts_of_agent=[]
         self.remaining_uncleaned=0
         try:

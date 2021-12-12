@@ -39,29 +39,96 @@ class Game2:
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
-        self.dirt_checkbox= Checkbox(self.screen,30,520,1,caption="Dirt")
-        self.wall_checkbox= Checkbox(self.screen,110,520,2,caption="Wall")
-        self.agent_checkbox= Checkbox(self.screen,210,520,2,caption="Place Agent")
+        # self.dirt_checkbox= Checkbox(self.screen,30,520,1,caption="Dirt")
+        # self.wall_checkbox= Checkbox(self.screen,110,520,2,caption="Wall")
+        # self.agent_checkbox= Checkbox(self.screen,210,520,2,caption="Place Agent")
         
-        self.rnd_dirts_btn= Button("Random Dirts",(10,560),font=25,bg=(200,150,50))
-        self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
-        self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
-        self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
-        self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Very Slow", "Slow","Medium","Fast","Very Fast"])
-        self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
-        self.random_dist_list=DropDown(350, 560, 180, 20,  "Select Random Distribution", ["Uniform: 50%", "Uniform: 12.5%"])
-        self.moves_label=TextLabel('No.  Moves: 0',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.explored_label=TextLabel('No.  Explored:0 ',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.input_txt=InputBox(200,650,80,30)
-        self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
+        # self.rnd_dirts_btn= Button("Random Dirts",(10,560),font=25,bg=(200,150,50))
+        # self.clear_dirts_btn= Button("Clear Dirts",(10,600),font=25,bg=(200,150,50))
+        # self.rnd_walls_btn=Button("Random Walls",(200,560),font=25,bg=(200,150,50))
+        # self.clear_walls_btn= Button("Clear Walls",(200,600),font=25,bg=(200,150,50))
+        # self.dropdown=DropDown(530, 510, 150, 20,  "Select Speed", ["Very Slow", "Slow","Medium","Fast","Very Fast"])
+        # self.algorithm_list=DropDown(350, 510, 150, 20,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
+        # self.random_dist_list=DropDown(350, 560, 180, 20,  "Select Random Distribution", ["Uniform: 50%", "Uniform: 12.5%"])
+        # self.moves_label=TextLabel('No.  Moves: 0',600,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        # self.explored_label=TextLabel('No.  Explored:0 ',600,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        # self.input_txt=InputBox(200,650,80,30)
+        # self.textlabel=TextLabel('Write in form "n,m"',100,665,font_background=(255,255,255))
 
-        self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
-        self.reset_btn= Button("  Reset  ",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
-        self.start_btn= Button("  Start  ",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
-        self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
+        # self.grid_btn= Button("Generate Grid",(300,650),font=25,bg=(100, 80, 255),text_color="Black")
+        # self.reset_btn= Button("  Reset  ",(500,650),font=25,bg=(255, 100, 100),text_color="Black")
+        # self.start_btn= Button("  Start  ",(600,650),font=25,bg=(100, 140, 60),text_color="Black")
+        # self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox]
+
+        #GUI From Below
+        self.controllers=TextLabel('Controllers',65,520,font_background=(255,255,255))
+        self.geneartors=TextLabel('Generators',300,520,font_background=(255,255,255))
+        self.restters=TextLabel('Resetters',450,520,font_background=(255,255,255))
+        self.dirt_checkbox= Checkbox(self.screen,10,550,1,caption="Place Dirt")
+        self.wall_checkbox= Checkbox(self.screen,10,590,2,caption="Place Wall")
+        self.agent_checkbox= Checkbox(self.screen,10,630,2,caption="Place Cleaning Agent")
+        self.dirt_agent_checkbox= Checkbox(self.screen,10,670,2,caption="Place Dirt Agent")
+        self.random_dist_list=DropDown(250, 550, 120, 30,  "Randomness %", ["Uniform: 50%", "Uniform: 12.5%"])
+        self.rnd_dirts_btn= Button("Random Dirts",(250, 600),font=25,bg=(200,150,50))
+        self.rnd_walls_btn=Button("Random Walls",(250,650),font=25,bg=(200,150,50))
+        self.clear_dirts_btn= Button("Clear Dirts",(400,550),font=25,bg=(200,150,50))
+        self.clear_walls_btn= Button("Clear Walls",(400,600),font=25,bg=(200,150,50))
+        self.recharge_btn= Button("Recharge All",(530,550),font=25,bg=(200,150,50))
+        self.dropdown=DropDown(530, 510, 150, 30,  "Select Speed", ["Very Slow", "Slow","Medium","Fast","Very Fast"])
+
+
+
+        #GUI From the right side
+        self.textlabel=TextLabel('Write in form "n,m"',800,10,font_background=(255,255,255))
+        self.input_txt=InputBox(710,30,80,30)
+        self.grid_btn= Button("Generate Grid",(800,30),font=25,bg=(100, 80, 255),text_color="Black")
+        self.obs=TextLabel('Observablity',770,90,font_background=(255,255,255))
+        self.observablity=DropDown(710, 110, 180, 30,  "Select Agent's Observability", ["Fully Observable", "Partially Observable"])
+        self.visibility=TextLabel('Visibility',970,90,font_background=(255,255,255))
+        self.visibility_txt=InputBox(928,110,80,30)
+        self.set_vis_btn= Button("Set Visiblity",(1020,110),font=25,bg=(255, 100, 100),text_color="Black")
+        self.singleAgentLabel=TextLabel('For Single Agent:',800,170,font_background=(255,255,255))
+        self.algorithm_list=DropDown(710, 200, 150, 30,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
+        self.vacuumCleanerLabel=TextLabel('For Vacuum Cleaner #',820,270,font_background=(255,255,255))
+        self.add_vacuum_checkbox= Checkbox(self.screen,710,290,1,caption="Add Vacuum Cleaner")
+        self.stepAheadLabel=TextLabel('Steps Ahead:',770,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.stepsAhead_input_txt=InputBox(840,320,80,30)
+        self.vacuum_dropdown=DropDown(710, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
+
+        self.dirtAgentLabel=TextLabel('For Dirt Agent #',1050,270,font_background=(255,255,255))
+        self.add_dirt_agent_checkbox= Checkbox(self.screen,975,290,1,caption="Add Dirt Agent")
+        self.stepAhead2Label=TextLabel('Steps Ahead:',1030,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.stepsAhead2_input_txt=InputBox(1100,320,80,30)
+        self.dirt_dropdown=DropDown(980, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
+
+        self.performanceLabel=TextLabel('Cleaners Performance',820,430,font_background=(255,255,255))
+        self.multiCleaners=DropDown(710, 450, 150, 30,  "Cleaners", ["1", "2","3"])
+        self.moves_label=TextLabel('Number of Moves: 0',800,500,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.explored_label=TextLabel('Number of Explored: 0 ',810,530,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        #self.moves_required_label=TextLabel('Number of Moves Required: 0 ',840,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.battery=TextLabel('Battery%: 0 ',770,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+
+
+        self.performanceLabel2=TextLabel('Dirtiers Performance',1080,430,font_background=(255,255,255))
+        self.multiDirtiers=DropDown(980, 450, 150, 30,  "Dirtiers", ["1", "2","3"])
+        self.moves_label2=TextLabel('Number of Moves: 0',1070,500,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.explored_label2=TextLabel('Number of Explored: 0 ',1080,530,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.moves_required_label2=TextLabel('Number of Moves Required: 0 ',840,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.battery2=TextLabel('Battery%: 0 ',1040,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+
+        self.scores=TextLabel('Scores',750,600,font_background=(255,255,255))
+        self.winnerCleanerAgent=TextLabel('Winner Cleaner Agnet',810,625,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.WinnerDirtAgent=TextLabel('Winner Dirt Agnet',790,650,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.BothAgent=TextLabel('Overall Winner',780,675,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+
+        self.reset_btn= Button("  Reset  ",(1100,650),font=25,bg=(255, 100, 100),text_color="Black")
+        self.start_btn= Button("  Start   ",(1100,600),font=25,bg=(100, 140, 60),text_color="Black")
+        self.checkboxes=[self.dirt_checkbox,self.wall_checkbox,self.agent_checkbox,self.dirt_agent_checkbox,self.add_vacuum_checkbox,self.add_dirt_agent_checkbox]
+
         self.initialized=False
         self.WAIT_TIME=0.5
         self.ALGORITHM="Modified BFS"
+
     def init_pygame(self):
         pygame.init()
         self.BG_COLOR = constants.BG_COLOR
@@ -109,22 +176,68 @@ class Game2:
         self.dirt_checkbox.render_checkbox()
         self.wall_checkbox.render_checkbox()
         self.agent_checkbox.render_checkbox()
+        self.dirt_agent_checkbox.render_checkbox()
+        self.add_vacuum_checkbox.render_checkbox()
+        self.add_dirt_agent_checkbox.render_checkbox()
+
         self.screen.blit(self.reset_btn.surface, (self.reset_btn.x, self.reset_btn.y))
+        self.screen.blit(self.recharge_btn.surface,(self.recharge_btn.x, self.recharge_btn.y))
         self.screen.blit(self.start_btn.surface, (self.start_btn.x, self.start_btn.y))
         self.screen.blit(self.rnd_dirts_btn.surface, (self.rnd_dirts_btn.x, self.rnd_dirts_btn.y))
         self.screen.blit(self.clear_dirts_btn.surface, (self.clear_dirts_btn.x, self.clear_dirts_btn.y))
         self.screen.blit(self.grid_btn.surface, (self.grid_btn.x, self.grid_btn.y))
         self.screen.blit(self.rnd_walls_btn.surface, (self.rnd_walls_btn.x, self.rnd_walls_btn.y))
         self.screen.blit(self.clear_walls_btn.surface, (self.clear_walls_btn.x, self.clear_walls_btn.y))
+        self.screen.blit(self.set_vis_btn.surface, (self.set_vis_btn.x, self.set_vis_btn.y))
         self.input_txt.draw(self.screen)
         self.all_sprites.update()
         self.all_sprites.draw(self.screen)
-        self.dropdown.draw(self.screen)
-        self.algorithm_list.draw(self.screen)
         self.textlabel.draw(self.screen)
+        self.controllers.draw(self.screen)
+        self.geneartors.draw(self.screen)
+        self.restters.draw(self.screen)
+        self.obs.draw(self.screen)
+        self.visibility.draw(self.screen)
+        self.visibility_txt.draw(self.screen)
+        self.singleAgentLabel.draw(self.screen)
+        self.vacuumCleanerLabel.draw(self.screen)
+        self.stepAheadLabel.draw(self.screen)
+        self.stepsAhead_input_txt.draw(self.screen)
+        self.dirtAgentLabel.draw(self.screen)
+        self.stepsAhead2_input_txt.draw(self.screen)
+        self.stepAhead2Label.draw(self.screen)
+        self.performanceLabel.draw(self.screen)
+        #self.moves_required_label.draw(self.screen)
+        self.battery.draw(self.screen)
+        self.scores.draw(self.screen)
+        self.performanceLabel2.draw(self.screen)
+        self.moves_label2.draw(self.screen)
+        self.explored_label2.draw(self.screen)
+        self.battery2.draw(self.screen)
+        self.winnerCleanerAgent.draw(self.screen)
+        self.WinnerDirtAgent.draw(self.screen)
+        self.BothAgent.draw(self.screen)
+
+
+        self.multiCleaners.draw(self.screen)
+        self.multiDirtiers.draw(self.screen)
+        self.dropdown.draw(self.screen)
+        self.observablity.draw(self.screen)
+        self.algorithm_list.draw(self.screen)
+        self.vacuum_dropdown.draw(self.screen)
+        self.dirt_dropdown.draw(self.screen)
+        self.random_dist_list.draw(self.screen)
 
         pygame.display.flip()
 
+    def cleanMultiAgents(self):
+        if(self.multiCleaners == "Minimax"):
+            print("minimax")
+        if(self.multiCleaners == "Alpha-Beta"):
+            print("Alpha-Beta")
+        if(self.multiCleaners == "Random"):
+            print("Random")
+        self.draw()
 
     def handle_events(self):
         
@@ -147,10 +260,16 @@ class Game2:
                             if b != box:
                                 b.checked = False
             self.input_txt.handle_event(event)
+            self.stepsAhead_input_txt.handle_event(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
+                self.observablity.update(event)
                 self.algorithm_list.update(event)
                 self.random_dist_list.update(event)
+                self.vacuum_dropdown.update(event)
+                self.dirt_dropdown.update(event)
+                self.multiCleaners.update(event)
+                self.multiDirtiers.update(event)
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
                     y=pygame.mouse.get_pos()[1]
@@ -254,6 +373,8 @@ class Game2:
             for i,V in enumerate(self.VacuumCleaners):
 
                 self.VacuumCleaners[i]= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+            for i,V in enumerate(self.DirtAgents):
+                self.DirtAgents[i]= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
             self.draw()
         except:
             self.input_txt=InputBox(200,650,80,30)
