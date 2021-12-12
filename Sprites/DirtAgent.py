@@ -9,7 +9,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.TILE_WIDTH= TILE_WIDTH
         self.TILE_HEIGHT= TILE_HEIGHT
         self.count=0
-        self.filepath = "images/dog1.png"
+        self.filepath = "images/dog.png"
         self.dirts_of_agent=[]
         self.remaining_uncleaned=0
         try:

@@ -31,8 +31,8 @@ class Game2:
         self.Tiles=Tiles(n,m)
         self.Dirts=Dirts(n,m)
         self.Walls = Walls(n,m)
-        self.VacuumCleaners= [VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,3),VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,2,2)]
-        self.DirtAgents=[DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4),DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,5,5),DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,5)]
+        self.VacuumCleaners= [VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,3),VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,2,2),VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,5,5)]
+        self.DirtAgents=[DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4),DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,5)]
         self.counts=[0,0,0]
         self.cross_scores=[]
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
@@ -286,7 +286,8 @@ class Game2:
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
                         for i in range(30):
-                            self.startAllAgents()
+                            #self.startAllAgentsMiniMax()
+                            self.startAllAgentsMiniMax()
                         self.getEvaluationScores()
                         # for i in range(30):
                         #     for i in range(len(self.DirtAgents)):
@@ -551,7 +552,7 @@ class Game2:
     #     self.DirtAgents[i].count+=1
 
 
-    def startAllAgents(self):
+    def startAllAgentsMiniMax(self):
         for i in range(len(self.DirtAgents)):
              minimax= MiniMax()
              dirtAgentTile= self.Tiles.tiles[self.DirtAgents[i].x][self.DirtAgents[i].y]
@@ -560,7 +561,7 @@ class Game2:
                 self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
              d_copy=  deepcopy(self.Dirts.dirts_array)
-             score,t,d_tile=minimax.minimaxmulti(True,3,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             score,t,d_tile=minimax.minimaxmulti(True,5,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
              self.DirtAgents[i].count+=1
              self.counts[i]+=1
@@ -578,7 +579,42 @@ class Game2:
                     self.Dirts.dirts_array.pop(index)
                     self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
              d_copy=deepcopy(self.Dirts.dirts_array)
-             score,tile,d_tile=minimax.minimaxmulti(False,3,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             score,tile,d_tile=minimax.minimaxmulti(False,5,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
+             self.draw()
+             pygame.event.pump()
+
+        pass
+    def startAllAgentsAlphaBeta(self):
+        alpha=-float('inf')
+        beta=float('inf')
+        for i in range(len(self.DirtAgents)):
+             minimax= MiniMax()
+             dirtAgentTile= self.Tiles.tiles[self.DirtAgents[i].x][self.DirtAgents[i].y]
+             if ((dirtAgentTile.x,dirtAgentTile.y) not in self.Dirts.dirts_array and self.DirtAgents[i].count%3==0):
+                self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
+                self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
+                self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
+             d_copy=  deepcopy(self.Dirts.dirts_array)
+             score,t,d_tile=minimax.alphabetamulti(True,-float('inf'),float('inf'),5,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
+             self.DirtAgents[i].count+=1
+             self.counts[i]+=1
+             self.draw()
+             pygame.event.pump()
+        for i in range(len(self.VacuumCleaners)):
+             minimax= MiniMax()
+             cleaningAgentTile= self.Tiles.tiles[self.VacuumCleaners[i].x][self.VacuumCleaners[i].y]
+             if self.Tiles.tiles[cleaningAgentTile.x][cleaningAgentTile.y].isDirty:
+                self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y].kill()
+                self.Dirts.dirts[cleaningAgentTile.x][cleaningAgentTile.y]=Dirt()
+                self.Tiles.tiles[cleaningAgentTile.x][cleaningAgentTile.y].isDirty=False
+                if ((cleaningAgentTile.x,cleaningAgentTile.y) in self.Dirts.dirts_array):
+                    index=self.Dirts.dirts_array.index((cleaningAgentTile.x,cleaningAgentTile.y))
+                    self.Dirts.dirts_array.pop(index)
+                    self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
+             d_copy=deepcopy(self.Dirts.dirts_array)
+             score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),5,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
              self.draw()
              pygame.event.pump()
