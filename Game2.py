@@ -22,7 +22,8 @@ from Algorithms.Astar import Astar
 from Algorithms.TSP import generatePathsList
 from Algorithms.MiniMax.minimax import MiniMax
 from copy import deepcopy
-
+import math
+import constants
 class Game2:
     def __init__(self,n,m):
         self.n=n
@@ -31,14 +32,23 @@ class Game2:
         self.Tiles=Tiles(n,m)
         self.Dirts=Dirts(n,m)
         self.Walls = Walls(n,m)
-        self.VacuumCleaners= [VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,3),VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,2,2),VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,5,5)]
-        self.DirtAgents=[DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4),DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,4,5)]
+        self.VacuumCleaners= []
+        self.DirtAgents=[]
+        self.vacuum_cleaners_indices = []
+        self.dirt_agents_indices = []
+        self.current_vacuum_index=0
+        self.current_dirt_agent_index=0
+        self.selected_cleaner_index=0
+        self.selected_dirt_agent_index= 0
+        self.stepsAheadDirtAgent=5
+        self.stepsAheadCleaner=5
         self.counts=[0,0,0]
         self.cross_scores=[]
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
         self.all_sprites = pygame.sprite.Group()
         self.keep_looping=True
+
         # self.dirt_checkbox= Checkbox(self.screen,30,520,1,caption="Dirt")
         # self.wall_checkbox= Checkbox(self.screen,110,520,2,caption="Wall")
         # self.agent_checkbox= Checkbox(self.screen,210,520,2,caption="Place Agent")
@@ -89,20 +99,20 @@ class Game2:
         self.set_vis_btn= Button("Set Visiblity",(1020,110),font=25,bg=(255, 100, 100),text_color="Black")
         self.singleAgentLabel=TextLabel('For Single Agent:',800,170,font_background=(255,255,255))
         self.algorithm_list=DropDown(710, 200, 150, 30,  "Select Algorithm", ["Modified BFS", "TSP+Best First Search","Djikstra","A*"])
-        self.vacuumCleanerLabel=TextLabel('For Vacuum Cleaner #',820,270,font_background=(255,255,255))
+        self.vacuumCleanerLabel=TextLabel('For Vacuum Cleaner #1',820,270,font_background=(255,255,255))
         self.add_vacuum_checkbox= Checkbox(self.screen,710,290,1,caption="Add Vacuum Cleaner")
         self.stepAheadLabel=TextLabel('Steps Ahead:',770,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.stepsAhead_input_txt=InputBox(840,320,80,30)
         self.vacuum_dropdown=DropDown(710, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
 
-        self.dirtAgentLabel=TextLabel('For Dirt Agent #',1050,270,font_background=(255,255,255))
+        self.dirtAgentLabel=TextLabel('For Dirt Agent #0',1050,270,font_background=(255,255,255))
         self.add_dirt_agent_checkbox= Checkbox(self.screen,975,290,1,caption="Add Dirt Agent")
         self.stepAhead2Label=TextLabel('Steps Ahead:',1030,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.stepsAhead2_input_txt=InputBox(1100,320,80,30)
         self.dirt_dropdown=DropDown(980, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
 
         self.performanceLabel=TextLabel('Cleaners Performance',820,430,font_background=(255,255,255))
-        self.multiCleaners=DropDown(710, 450, 150, 30,  "Cleaners", ["1", "2","3"])
+        self.multiCleaners=DropDown(840, 450, 80, 30,  "1", self.vacuum_cleaners_indices)
         self.moves_label=TextLabel('Number of Moves: 0',800,500,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.explored_label=TextLabel('Number of Explored: 0 ',810,530,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         #self.moves_required_label=TextLabel('Number of Moves Required: 0 ',840,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
@@ -110,7 +120,7 @@ class Game2:
 
 
         self.performanceLabel2=TextLabel('Dirtiers Performance',1080,430,font_background=(255,255,255))
-        self.multiDirtiers=DropDown(980, 450, 150, 30,  "Dirtiers", ["1", "2","3"])
+        self.multiDirtiers=DropDown(1100, 450, 80, 30,  "0", self.dirt_agents_indices)
         self.moves_label2=TextLabel('Number of Moves: 0',1070,500,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.explored_label2=TextLabel('Number of Explored: 0 ',1080,530,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.moves_required_label2=TextLabel('Number of Moves Required: 0 ',840,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
@@ -128,6 +138,21 @@ class Game2:
         self.initialized=False
         self.WAIT_TIME=0.5
         self.ALGORITHM="Modified BFS"
+
+        #start with 1 vacuum cleaner
+        self.VacuumCleaners.append(VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,0))
+        self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(0,0,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
+        self.current_vacuum_index+=1
+        self.vacuum_cleaners_indices.append(str(self.current_vacuum_index))
+        self.selected_cleaner_index=self.multiCleaners.options[self.multiCleaners.active_option]
+
+        #start with 1 dirt agent that will be ignored upon calling minimax
+        # self.DirtAgents.append(DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,0))
+        # # self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(0,0,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
+        # self.current_dirt_agent_index+=1
+        # # self.dirt_agents_indices.append(str(self.current_dirt_agent_index))
+        # # self.selected_dirt_agent_index=self.multiDirtiers.options[self.multiDirtiers.active_option]
+
 
     def init_pygame(self):
         pygame.init()
@@ -159,10 +184,11 @@ class Game2:
             for dirt in dirtss:
                 dirt.kill()
     def killVacuumCleaner(self):
-        for VacuumCleaner in self.VacuumCleaners:
+        self.VacuumCleaners[int(self.selected_cleaner_index)-1].kill()
 
-            VacuumCleaner.kill()
-    
+    def killDirtAgent(self):
+        self.DirtAgents[int(self.selected_dirt_agent_index)-1].kill()
+
     def killTiles(self):
         for tiles in self.Tiles.tiles:
             for tile in tiles:
@@ -230,15 +256,24 @@ class Game2:
 
         pygame.display.flip()
 
-    def cleanMultiAgents(self):
-        if(self.multiCleaners == "Minimax"):
-            print("minimax")
-        if(self.multiCleaners == "Alpha-Beta"):
-            print("Alpha-Beta")
-        if(self.multiCleaners == "Random"):
-            print("Random")
-        self.draw()
+    # def cleanMultiAgents(self):
+    #     if(self.multiCleaners == "Minimax"):
+    #         print("minimax")
+    #     if(self.multiCleaners == "Alpha-Beta"):
+    #         print("Alpha-Beta")
+    #     if(self.multiCleaners == "Random"):
+    #         print("Random")
+    #     self.draw()
 
+    def updateSelectedAgents(self):
+        self.selected_cleaner_index = int(self.multiCleaners.main)
+        print("HERE SELECTED CLEANER",self.selected_cleaner_index)
+        self.selected_dirt_agent_index = int(self.multiDirtiers.main)
+        self.vacuumCleanerLabel.setText("For Vacuum Cleaner #"+str(self.selected_cleaner_index))
+        self.dirtAgentLabel.setText("For Dirt Agent #"+str(self.selected_dirt_agent_index))
+        # if self.selected_dirt_agent_index>0:
+        #     self.selected_dirt_agent_index = self.multiDirtiers.options[self.multiDirtiers.active_option]
+        print("HERE SELECTED DIRT AGENT",self.selected_dirt_agent_index)
     def handle_events(self):
         
         for event in pygame.event.get():
@@ -261,6 +296,7 @@ class Game2:
                                 b.checked = False
             self.input_txt.handle_event(event)
             self.stepsAhead_input_txt.handle_event(event)
+
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
                 self.observablity.update(event)
@@ -270,6 +306,7 @@ class Game2:
                 self.dirt_dropdown.update(event)
                 self.multiCleaners.update(event)
                 self.multiDirtiers.update(event)
+
                 if pygame.mouse.get_pressed()[0]:
                     x=pygame.mouse.get_pos()[0]
                     y=pygame.mouse.get_pos()[1]
@@ -277,17 +314,55 @@ class Game2:
                     self.Tiles.addDirt(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.dirt_checkbox.checked)
                     self.Walls.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
-                    print(self.Dirts.dirts_array)
-                    if(self.agent_checkbox):
+
+                    self.updateSelectedAgents()
+                    x1=math.floor(x/self.Tiles.TILE_WIDTH)
+                    y1=math.floor((y)/self.Tiles.TILE_HEIGHT)
+
+                    #Add vacuum cleaner and update dropdown
+                    if(self.add_vacuum_checkbox.checked and y1<=self.m-1 and x1<=self.n-1):
+                        self.VacuumCleaners.append(VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,x,y))
+
+                        self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(x,y,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
+                        self.current_vacuum_index+=1
+                        self.vacuum_cleaners_indices.append(str(self.current_vacuum_index))
+
+                    else:
+                        pass
+
+                    #move the vacuum cleaner
+                    if self.agent_checkbox.checked:
                         self.killVacuumCleaner()
-                        self.VacuumCleaners[0].addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
+                        self.VacuumCleaners[int(self.selected_cleaner_index)-1].addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
+
+                    #add dirt agents and update dropdown
+                    if(self.add_dirt_agent_checkbox.checked and y1<=self.m-1 and x1<=self.n-1):
+                        self.DirtAgents.append(DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,x,y))
+                        self.DirtAgents[len(self.DirtAgents)-1].addAgent(x,y,check=self.add_dirt_agent_checkbox.checked,n=self.n,m=self.m)
+                        self.current_dirt_agent_index+=1
+                        self.dirt_agents_indices.append(str(self.current_dirt_agent_index))
+
+                    else:
+                        pass
+
+                    #move the dirt agent
+                    if self.dirt_agent_checkbox.checked:
+                        if self.selected_dirt_agent_index>0:
+                            self.killDirtAgent()
+                            self.DirtAgents[int(self.selected_dirt_agent_index)-1].addAgent(x,y,check=self.dirt_agent_checkbox.checked,n=self.n,m=self.m)
+
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
-                        for i in range(30):
-                            #self.startAllAgentsMiniMax()
-                            self.startAllAgentsMiniMax()
+
+                        if len(self.DirtAgents)==0:
+                            #single of project 1
+                            pass
+                        else:
+                            for i in range(30):
+                                #self.startAllAgentsMiniMax()
+                                self.startAllAgentsMiniMax()
                         self.getEvaluationScores()
                         # for i in range(30):
                         #     for i in range(len(self.DirtAgents)):
@@ -703,3 +778,5 @@ class Game2:
             print("Cleaner agent ",overall_winner_index)
         else:
             print("Dirt agent ",overall_winner_index)
+
+

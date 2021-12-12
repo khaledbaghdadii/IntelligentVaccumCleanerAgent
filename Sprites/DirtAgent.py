@@ -33,7 +33,7 @@ class DirtAgent(pygame.sprite.Sprite):
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        if y<=m -1 and check :
+        if y<=m -1 and x<=n-1 and check :
             self.__init__(self.TILE_WIDTH,self.TILE_HEIGHT,x,y)
             
 

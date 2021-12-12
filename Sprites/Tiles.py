@@ -94,10 +94,10 @@ class Tiles:
         constants.SCREEN_HEIGHT
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
-        if y<=self.m-1 and check:
+        if y<=self.m-1 and x<=self.n-1 and check:
             self.tiles[x][y].setIsDirty(True)
     def addDirtXY(self,x,y,check):
-        if y<=self.m-1 and check:
+        if y<=self.m-1 and x<=self.n-1 and check:
             self.tiles[x][y].setIsDirty(True)
     def removeDirtXY(self,x,y):
         self.tiles[x][y].setIsDirty(False)
@@ -107,7 +107,7 @@ class Tiles:
         x=math.floor(mouse_x/self.TILE_WIDTH)
         y=math.floor((mouse_y)/self.TILE_HEIGHT)
 
-        if y<=self.m -1 and check:
+        if y<=self.m -1 and x<=self.n-1 and check:
             if mouse_x/self.TILE_WIDTH >= x+7/8 and mouse_x/self.TILE_WIDTH<=x+1 and x+1<len(self.tiles):
                 self.tiles[x][y].has_walls_right=True
                 self.tiles[x+1][y].has_walls_left=True
