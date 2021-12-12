@@ -102,13 +102,13 @@ class Game2:
         self.vacuumCleanerLabel=TextLabel('For Vacuum Cleaner #1',820,270,font_background=(255,255,255))
         self.add_vacuum_checkbox= Checkbox(self.screen,710,290,1,caption="Add Vacuum Cleaner")
         self.stepAheadLabel=TextLabel('Steps Ahead:',770,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.stepsAhead_input_txt=InputBox(840,320,80,30)
+        self.steps_ahead_cleaner_input=InputBox(840,320,80,30)
         self.vacuum_dropdown=DropDown(710, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
 
         self.dirtAgentLabel=TextLabel('For Dirt Agent #0',1050,270,font_background=(255,255,255))
         self.add_dirt_agent_checkbox= Checkbox(self.screen,975,290,1,caption="Add Dirt Agent")
         self.stepAhead2Label=TextLabel('Steps Ahead:',1030,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.stepsAhead2_input_txt=InputBox(1100,320,80,30)
+        self.steps_ahead_dirtier_input=InputBox(1100,320,80,30)
         self.dirt_dropdown=DropDown(980, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
 
         self.performanceLabel=TextLabel('Cleaners Performance',820,430,font_background=(255,255,255))
@@ -228,9 +228,9 @@ class Game2:
         self.singleAgentLabel.draw(self.screen)
         self.vacuumCleanerLabel.draw(self.screen)
         self.stepAheadLabel.draw(self.screen)
-        self.stepsAhead_input_txt.draw(self.screen)
+        self.steps_ahead_cleaner_input.draw(self.screen)
         self.dirtAgentLabel.draw(self.screen)
-        self.stepsAhead2_input_txt.draw(self.screen)
+        self.steps_ahead_dirtier_input.draw(self.screen)
         self.stepAhead2Label.draw(self.screen)
         self.performanceLabel.draw(self.screen)
         #self.moves_required_label.draw(self.screen)
@@ -295,8 +295,8 @@ class Game2:
                             if b != box:
                                 b.checked = False
             self.input_txt.handle_event(event)
-            self.stepsAhead_input_txt.handle_event(event)
-
+            self.steps_ahead_cleaner_input.handle_event(event)
+            self.steps_ahead_dirtier_input.handle_event(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
                 self.observablity.update(event)
@@ -322,10 +322,15 @@ class Game2:
                     #Add vacuum cleaner and update dropdown
                     if(self.add_vacuum_checkbox.checked and y1<=self.m-1 and x1<=self.n-1):
                         self.VacuumCleaners.append(VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,x,y))
-
                         self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(x,y,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
                         self.current_vacuum_index+=1
                         self.vacuum_cleaners_indices.append(str(self.current_vacuum_index))
+                        if self.steps_ahead_cleaner_input.text=="":
+                            print("no steps ahead for cleaner")
+                            pass
+                        else:
+                            self.VacuumCleaners[len(self.VacuumCleaners)-1].stepsAhead=int(self.steps_ahead_cleaner_input.text)
+                            print("steps ahead input is ",self.steps_ahead_cleaner_input.text)
 
                     else:
                         pass
@@ -341,7 +346,12 @@ class Game2:
                         self.DirtAgents[len(self.DirtAgents)-1].addAgent(x,y,check=self.add_dirt_agent_checkbox.checked,n=self.n,m=self.m)
                         self.current_dirt_agent_index+=1
                         self.dirt_agents_indices.append(str(self.current_dirt_agent_index))
-
+                        if self.steps_ahead_dirtier_input.text=="":
+                            print("no steps ahead for dirt agent")
+                            pass
+                        else:
+                            self.DirtAgents[len(self.DirtAgents)-1].stepsAhead=int(self.steps_ahead_dirtier_input.text)
+                            print("steps ahead input is ",self.steps_ahead_dirtier_input.text)
                     else:
                         pass
 
@@ -636,7 +646,7 @@ class Game2:
                 self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
              d_copy=  deepcopy(self.Dirts.dirts_array)
-             score,t,d_tile=minimax.minimaxmulti(True,5,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             score,t,d_tile=minimax.minimaxmulti(True,self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
              self.DirtAgents[i].count+=1
              self.counts[i]+=1
@@ -654,7 +664,7 @@ class Game2:
                     self.Dirts.dirts_array.pop(index)
                     self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
              d_copy=deepcopy(self.Dirts.dirts_array)
-             score,tile,d_tile=minimax.minimaxmulti(False,5,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
              self.draw()
              pygame.event.pump()

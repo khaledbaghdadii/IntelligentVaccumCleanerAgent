@@ -12,6 +12,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.filepath = "images/dog.png"
         self.dirts_of_agent=[]
         self.remaining_uncleaned=0
+        self.stepsAhead = 5
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:

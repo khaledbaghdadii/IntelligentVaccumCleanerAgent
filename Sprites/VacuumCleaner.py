@@ -11,6 +11,7 @@ class VacuumCleaner(pygame.sprite.Sprite):
         self.filepath = "images/vacuum-cleaner.png"
         self.dirts_cleaned=[]
         self.total_num_cleaned=0
+        self.stepsAhead = 5
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:
