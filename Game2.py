@@ -117,6 +117,8 @@ class Game2:
         #Dirt Frequencies
         self.dirtFrequency=TextLabel('Dirts Freq.:',1030,455,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.dirts_freq_input=InputBox(1100,440,80,30)
+        self.recharge_value_input=InputBox(1100,520,80,30)
+        self.rechargeValueText=TextLabel('Recharge Value:',1030,535,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
 
         self.scores=TextLabel('Scores',750,570,font_background=(255,255,255))
         self.winnerCleanerAgent=TextLabel('Winner Cleaner Agent:         ',845,600,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
@@ -239,7 +241,9 @@ class Game2:
         self.WinnerDirtAgent.draw(self.screen)
         self.BothAgent.draw(self.screen)
         self.dirtFrequency.draw(self.screen)
+        self.rechargeValueText.draw(self.screen)
         self.dirts_freq_input.draw(self.screen)
+        self.recharge_value_input.draw(self.screen)
 
         self.multiCleaners.draw(self.screen)
         self.multiDirtiers.draw(self.screen)
@@ -295,6 +299,7 @@ class Game2:
             self.visibility_txt.handle_event(event)
             self.steps_ahead_dirtier_input.handle_event(event)
             self.dirts_freq_input.handle_event(event)
+            self.recharge_value_input.handle_event(event)
             self.iteration_number_input.handle_event(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
@@ -363,6 +368,12 @@ class Game2:
                             pass
                         else:
                             self.dirts_freq_used=int(self.dirts_freq_input.text)
+                        if self.recharge_value_input.text=="" or int(self.recharge_value_input.text)<0:
+                            print("no input ")
+                            pass
+                        else:
+                            self.recharge_value=int(self.recharge_value_input.text)
+
                     else:
                         pass
 
@@ -529,6 +540,14 @@ class Game2:
             self.winnerCleanerAgent.setText('Winner Cleaner Agent:         ')
             self.WinnerDirtAgent.setText('Winner Dirt Agent:        ')
             self.BothAgent.setText('Overall Winner:                           ')
+            self.current_vacuum_index=0
+            self.current_dirt_agent_index=0
+            self.selected_cleaner_index=0
+            self.selected_dirt_agent_index= 0
+            self.added_agents_on_gui=[]
+            self.vacuum_cleaners_indices = []
+            self.dirt_agents_indices = []
+
             self.draw()
     def randomWalls(self):
         tiles=self.Tiles.tiles
@@ -704,7 +723,8 @@ class Game2:
                 self.DirtAgents[i].battery-=10
                 # self.dirt_agents_battery[i]-=10
              d_copy=  deepcopy(self.Dirts.dirts_array)
-             score,t,d_tile=minimax.minimaxmulti(True,self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             if self.DirtAgents[i].battery>0:
+                score,t,d_tile=minimax.minimaxmulti(True,self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              if self.DirtAgents[i].battery>=5:
                 self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
                 sleep(self.WAIT_TIME)
@@ -727,7 +747,8 @@ class Game2:
                     self.VacuumCleaners[i].battery-=10
                     # self.cleaning_agents_battery[i]-=10
              d_copy=deepcopy(self.Dirts.dirts_array)
-             score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             if self.VacuumCleaners[i].battery>0:
+                score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              if self.VacuumCleaners[i].battery>=5:
                 self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
                 sleep(self.WAIT_TIME)
@@ -750,7 +771,8 @@ class Game2:
                 self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
                 self.DirtAgents[i].battery-=10
              d_copy=  deepcopy(self.Dirts.dirts_array)
-             score,t,d_tile=minimax.alphabetamulti(True,-float('inf'),float('inf'),self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             if self.DirtAgents[i].battery>0:
+                score,t,d_tile=minimax.alphabetamulti(True,-float('inf'),float('inf'),self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              if self.DirtAgents[i].battery>=5:
                 self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
                 sleep(self.WAIT_TIME)
@@ -771,7 +793,8 @@ class Game2:
                     self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
                     self.VacuumCleaners[i].battery-=10
              d_copy=deepcopy(self.Dirts.dirts_array)
-             score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             if self.VacuumCleaners[i].battery>0:
+                score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              if self.VacuumCleaners[i].battery>=5:
                 self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
                 sleep(self.WAIT_TIME)
@@ -799,7 +822,8 @@ class Game2:
                         self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
                         self.VacuumCleaners[i].battery-=10
                 d_copy=deepcopy(self.Dirts.dirts_array)
-                score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+                if self.VacuumCleaners[i].battery>0:
+                    score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
                 if(self.VacuumCleaners[i].battery>=5):
                     self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
                     self.VacuumCleaners[i].battery-=5
@@ -820,7 +844,8 @@ class Game2:
                         self.Dirts.dirts_array.pop(index)
                         self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
                  d_copy=deepcopy(self.Dirts.dirts_array)
-                 score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+                 if self.VacuumCleaners[i].battery>0:
+                    score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
                  if self.VacuumCleaners[i].battery>=5:
                     self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
                     sleep(self.WAIT_TIME)
