@@ -2,7 +2,7 @@ from Algorithms.PartialBFS import PartialBFS
 import random as rnd
 class PartiallyObservable:
 
-    def __init__(self,tilesArray):
+    def __init__(self,tilesArray,vis):
         self.tilesArray=tilesArray
         self.dirtsArray=[]
         # self.prev=[[]]
@@ -10,13 +10,14 @@ class PartiallyObservable:
         self.agent = None
         self.moves=0
         self.num_explored=0
+        self.radius = vis
 
     def clean(self,agentX,agentY):
-        radius=1
+        # radius=1
         currentAgentX=agentX
         currentAgentY=agentY
         self.tilesArray[currentAgentX][currentAgentY].isVisited=True
-        visibleTiles,visibleTilesTuples=self.getVisibleTiles(radius,currentAgentX,currentAgentY)
+        visibleTiles,visibleTilesTuples=self.getVisibleTiles(self.radius,currentAgentX,currentAgentY)
         while(self.allScanned(self.tilesArray)==False):
             lastTile=None
             self.tilesArray[currentAgentX][currentAgentY].isVisited=True
@@ -67,7 +68,7 @@ class PartiallyObservable:
             currentAgentX=lastTile.x
             currentAgentY=lastTile.y
             self.tilesArray[currentAgentX][currentAgentY].isVisited=True
-            visibleTiles,visibleTilesTuples=self.getVisibleTiles(radius,currentAgentX,currentAgentY)
+            visibleTiles,visibleTilesTuples=self.getVisibleTiles(self.radius,currentAgentX,currentAgentY)
         print("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
 

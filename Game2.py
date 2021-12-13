@@ -46,6 +46,7 @@ class Game2:
         self.counts=[]
         self.cross_scores=[]
         self.added_agents_on_gui=[]
+        self.visibility_used = 1
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
         self.all_sprites = pygame.sprite.Group()
@@ -280,6 +281,7 @@ class Game2:
                                 b.checked = False
             self.input_txt.handle_event(event)
             self.steps_ahead_cleaner_input.handle_event(event)
+            self.visibility_txt.handle_event(event)
             self.steps_ahead_dirtier_input.handle_event(event)
             if event.type ==pygame.MOUSEBUTTONDOWN :
                 self.dropdown.update(event)
@@ -351,6 +353,11 @@ class Game2:
 
                     if self.reset_btn.rect.collidepoint(x,y):
                         self.resetGrid()
+                    if self.set_vis_btn.rect.collidepoint(x,y):
+                        if self.visibility_txt.text=="":
+                            self.visibility_used=1
+                        else:
+                            self.visibility_used = int(self.visibility_txt.text)
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
 
@@ -662,6 +669,7 @@ class Game2:
                 self.DirtAgents[i].battery-=10
              d_copy=  deepcopy(self.Dirts.dirts_array)
              score,t,d_tile=minimax.minimaxmulti(True,self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
+             # if self.DirtAgents[i].battery>0:
              self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
              self.DirtAgents[i].count+=1
              self.counts[i]+=1
@@ -682,6 +690,7 @@ class Game2:
                     self.VacuumCleaners[i].battery-=10
              d_copy=deepcopy(self.Dirts.dirts_array)
              score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
+             # if self.VacuumCleaners[i].battery>0:
              self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
              self.draw()
              pygame.event.pump()
@@ -879,7 +888,7 @@ class Game2:
             self.cleanBFSVariants(x,y,tiles)
     def cleanBFSVariants(self,x,y,tiles):
         if self.observablity.main=="Partially Observable":
-            bfs=PartiallyObservable(self.Tiles.tiles)
+            bfs=PartiallyObservable(self.Tiles.tiles,self.visibility_used)
         else:
             if(self.ALGORITHM=="Modified BFS"):
                 bfs=BFS(tiles)
@@ -980,6 +989,6 @@ class Game2:
 
     def rechargeAllAgents(self):
         for i in self.VacuumCleaners:
-            i.battery=1000
+            i.battery=100
         for i in self.DirtAgents:
-            i.battery=1000
+            i.battery=100

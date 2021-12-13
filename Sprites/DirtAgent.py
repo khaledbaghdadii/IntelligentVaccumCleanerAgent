@@ -13,7 +13,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.dirts_of_agent=[]
         self.remaining_uncleaned=0
         self.stepsAhead = 5
-        self.battery=1000
+        self.battery=100
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:
