@@ -44,6 +44,7 @@ class Game2:
         self.stepsAheadCleaner=5
         self.counts=[]
         self.cross_scores=[]
+        self.added_agents_on_gui=[]
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
         self.all_sprites = pygame.sprite.Group()
@@ -103,7 +104,7 @@ class Game2:
         self.add_vacuum_checkbox= Checkbox(self.screen,710,290,1,caption="Add Vacuum Cleaner")
         self.stepAheadLabel=TextLabel('Steps Ahead:',770,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.steps_ahead_cleaner_input=InputBox(840,320,80,30)
-        self.multialgo_dropdown=DropDown(710, 370, 150, 30, "Select Algorithm", ["Minimax", "Alpha-Beta", "Random"])
+        self.multialgo_dropdown=DropDown(880, 370, 150, 30, "Select Algorithm", ["Minimax", "Alpha-Beta", "Random"])
 
         self.dirtAgentLabel=TextLabel('For Dirt Agent #0',1050,270,font_background=(255,255,255))
         self.add_dirt_agent_checkbox= Checkbox(self.screen,975,290,1,caption="Add Dirt Agent")
@@ -145,7 +146,7 @@ class Game2:
         self.current_vacuum_index+=1
         self.vacuum_cleaners_indices.append(str(self.current_vacuum_index))
         self.selected_cleaner_index=self.multiCleaners.options[self.multiCleaners.active_option]
-
+        self.added_agents_on_gui.append((0,0))
         #start with 1 dirt agent that will be ignored upon calling minimax
         # self.DirtAgents.append(DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,0))
         # # self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(0,0,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
@@ -321,9 +322,10 @@ class Game2:
                     y1=math.floor((y)/self.Tiles.TILE_HEIGHT)
 
                     #Add vacuum cleaner and update dropdown
-                    if(self.add_vacuum_checkbox.checked and y1<=self.m-1 and x1<=self.n-1):
+                    if(self.add_vacuum_checkbox.checked and y1<=self.m-1 and x1<=self.n-1 and ((x1,y1) not in self.added_agents_on_gui)):
                         self.VacuumCleaners.append(VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,x,y))
                         self.VacuumCleaners[len(self.VacuumCleaners)-1].addAgent(x,y,check=self.add_vacuum_checkbox.checked,n=self.n,m=self.m)
+                        self.added_agents_on_gui.append((x1,y1))
                         self.current_vacuum_index+=1
                         self.vacuum_cleaners_indices.append(str(self.current_vacuum_index))
                         if self.steps_ahead_cleaner_input.text=="":
@@ -342,9 +344,10 @@ class Game2:
                         self.VacuumCleaners[int(self.selected_cleaner_index)-1].addAgent(x,y,check=self.agent_checkbox.checked,n=self.n,m=self.m)
 
                     #add dirt agents and update dropdown
-                    if(self.add_dirt_agent_checkbox.checked and y1<=self.m-1 and x1<=self.n-1):
+                    if(self.add_dirt_agent_checkbox.checked and y1<=self.m-1 and x1<=self.n-1 and ((x1,y1) not in self.added_agents_on_gui)):
                         self.DirtAgents.append(DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,x,y))
                         self.DirtAgents[len(self.DirtAgents)-1].addAgent(x,y,check=self.add_dirt_agent_checkbox.checked,n=self.n,m=self.m)
+                        self.added_agents_on_gui.append((x1,y1))
                         self.current_dirt_agent_index+=1
                         self.dirt_agents_indices.append(str(self.current_dirt_agent_index))
                         self.counts.append(0)
@@ -383,9 +386,10 @@ class Game2:
                                     #self.startAllAgentsMiniMax()
                                     self.startAllAgentsAlphaBeta()
                                     self.getEvaluationScores()
+                            elif self.multialgo_dropdown.main=="Random":
+                                pass
                             else:
                                 for i in range(30):
-                                    #self.startAllAgentsMiniMax()
                                     self.startAllAgentsMiniMax()
                                     self.getEvaluationScores()
                         # for i in range(30):
