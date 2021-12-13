@@ -42,7 +42,7 @@ class Game2:
         self.selected_dirt_agent_index= 0
         self.stepsAheadDirtAgent=5
         self.stepsAheadCleaner=5
-        self.counts=[0,0,0]
+        self.counts=[]
         self.cross_scores=[]
         self.DirtAgent= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,0,1)
         self.DirtAgent2= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT,3,4)
@@ -103,13 +103,13 @@ class Game2:
         self.add_vacuum_checkbox= Checkbox(self.screen,710,290,1,caption="Add Vacuum Cleaner")
         self.stepAheadLabel=TextLabel('Steps Ahead:',770,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.steps_ahead_cleaner_input=InputBox(840,320,80,30)
-        self.vacuum_dropdown=DropDown(710, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
+        self.multialgo_dropdown=DropDown(710, 370, 150, 30, "Select Algorithm", ["Minimax", "Alpha-Beta", "Random"])
 
         self.dirtAgentLabel=TextLabel('For Dirt Agent #0',1050,270,font_background=(255,255,255))
         self.add_dirt_agent_checkbox= Checkbox(self.screen,975,290,1,caption="Add Dirt Agent")
         self.stepAhead2Label=TextLabel('Steps Ahead:',1030,340,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
         self.steps_ahead_dirtier_input=InputBox(1100,320,80,30)
-        self.dirt_dropdown=DropDown(980, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
+        # self.dirt_dropdown=DropDown(980, 370, 150, 30,  "Select Algorithim", ["Minimax", "Alpha-Beta","Random"])
 
         self.performanceLabel=TextLabel('Cleaners Performance',820,430,font_background=(255,255,255))
         self.multiCleaners=DropDown(840, 450, 80, 30,  "1", self.vacuum_cleaners_indices)
@@ -127,9 +127,9 @@ class Game2:
         self.battery2=TextLabel('Battery%: 0 ',1040,560,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
 
         self.scores=TextLabel('Scores',750,600,font_background=(255,255,255))
-        self.winnerCleanerAgent=TextLabel('Winner Cleaner Agnet',810,625,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.WinnerDirtAgent=TextLabel('Winner Dirt Agnet',790,650,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
-        self.BothAgent=TextLabel('Overall Winner',780,675,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.winnerCleanerAgent=TextLabel('Winner Cleaner Agent:     ',820,625,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.WinnerDirtAgent=TextLabel('Winner Dirt Agent:    ',805,650,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
+        self.BothAgent=TextLabel('Overall Winner:                      ',835,675,font_background=(255,255,255),font=pygame.font.SysFont(None, 25))
 
         self.reset_btn= Button("  Reset  ",(1100,650),font=25,bg=(255, 100, 100),text_color="Black")
         self.start_btn= Button("  Start   ",(1100,600),font=25,bg=(100, 140, 60),text_color="Black")
@@ -250,20 +250,20 @@ class Game2:
         self.dropdown.draw(self.screen)
         self.observablity.draw(self.screen)
         self.algorithm_list.draw(self.screen)
-        self.vacuum_dropdown.draw(self.screen)
-        self.dirt_dropdown.draw(self.screen)
+        self.multialgo_dropdown.draw(self.screen)
+        # self.dirt_dropdown.draw(self.screen)
         self.random_dist_list.draw(self.screen)
 
         pygame.display.flip()
 
-    # def cleanMultiAgents(self):
-    #     if(self.multiCleaners == "Minimax"):
-    #         print("minimax")
-    #     if(self.multiCleaners == "Alpha-Beta"):
-    #         print("Alpha-Beta")
-    #     if(self.multiCleaners == "Random"):
-    #         print("Random")
-    #     self.draw()
+    def cleanMultiAgents(self):
+        if(self.multialgo_dropdown.main == "Minimax"):
+            print("minimax")
+        if(self.multialgo_dropdown.main == "Alpha-Beta"):
+            print("Alpha-Beta")
+        if(self.multialgo_dropdown.main == "Random"):
+            print("Random")
+        self.draw()
 
     def updateSelectedAgents(self):
         self.selected_cleaner_index = int(self.multiCleaners.main)
@@ -302,8 +302,8 @@ class Game2:
                 self.observablity.update(event)
                 self.algorithm_list.update(event)
                 self.random_dist_list.update(event)
-                self.vacuum_dropdown.update(event)
-                self.dirt_dropdown.update(event)
+                self.multialgo_dropdown.update(event)
+                # self.dirt_dropdown.update(event)
                 self.multiCleaners.update(event)
                 self.multiDirtiers.update(event)
 
@@ -316,6 +316,7 @@ class Game2:
                     self.Tiles.addWall(mouse_x=pygame.mouse.get_pos()[0],mouse_y=pygame.mouse.get_pos()[1],check=self.wall_checkbox.checked)
 
                     self.updateSelectedAgents()
+
                     x1=math.floor(x/self.Tiles.TILE_WIDTH)
                     y1=math.floor((y)/self.Tiles.TILE_HEIGHT)
 
@@ -346,6 +347,7 @@ class Game2:
                         self.DirtAgents[len(self.DirtAgents)-1].addAgent(x,y,check=self.add_dirt_agent_checkbox.checked,n=self.n,m=self.m)
                         self.current_dirt_agent_index+=1
                         self.dirt_agents_indices.append(str(self.current_dirt_agent_index))
+                        self.counts.append(0)
                         if self.steps_ahead_dirtier_input.text=="":
                             print("no steps ahead for dirt agent")
                             pass
@@ -370,10 +372,22 @@ class Game2:
                             #single of project 1
                             pass
                         else:
-                            for i in range(30):
-                                #self.startAllAgentsMiniMax()
-                                self.startAllAgentsMiniMax()
-                        self.getEvaluationScores()
+                            if self.multialgo_dropdown.main=="Minimax":
+                                pass
+                                for i in range(30):
+                                    #self.startAllAgentsMiniMax()
+                                    self.startAllAgentsMiniMax()
+                                    self.getEvaluationScores()
+                            elif self.multialgo_dropdown.main=="Alpha-Beta":
+                                for i in range(30):
+                                    #self.startAllAgentsMiniMax()
+                                    self.startAllAgentsAlphaBeta()
+                                    self.getEvaluationScores()
+                            else:
+                                for i in range(30):
+                                    #self.startAllAgentsMiniMax()
+                                    self.startAllAgentsMiniMax()
+                                    self.getEvaluationScores()
                         # for i in range(30):
                         #     for i in range(len(self.DirtAgents)):
                         #         self.startSmartDirtAgent1(i)
@@ -752,6 +766,7 @@ class Game2:
             print("Remaining uncleaned of dirt agent ",i+1,": ", self.DirtAgents[i].remaining_uncleaned," out of ",len(self.DirtAgents[i].dirts_of_agent))
 
         print("Winner among dirt agents is agent number ", winner_among_dirt_agents_index+1)
+        self.WinnerDirtAgent.setText("Winner Dirt Agent:"+str(winner_among_dirt_agents_index+1)+str(" (")+str(self.DirtAgents[i].x)+str(",") +str(self.DirtAgents[i].y)+str(")"))
         #winner among cleaning agents
         for i in range(len(self.VacuumCleaners)):
             if(self.VacuumCleaners[i].total_num_cleaned>max_cleaned):
@@ -759,7 +774,7 @@ class Game2:
                 max_cleaned=self.VacuumCleaners[i].total_num_cleaned
             print("Number of tiles cleaned by agent ",i+1,": ",self.VacuumCleaners[i].total_num_cleaned)
         print("Winner among cleaner agents is agent number ", winner_among_cleaner_agents_index+1)
-
+        self.winnerCleanerAgent.setText("Winner Cleaner Agent:"+str(winner_among_cleaner_agents_index+1)+str(" (")+str(self.VacuumCleaners[i].x)+str(",") +str(self.VacuumCleaners[i].y)+str(")"))
         #cross scores
         for i in range(len(self.VacuumCleaners)):
             for j in range(len(self.DirtAgents)):
@@ -786,7 +801,10 @@ class Game2:
         print("Overall winner is:  ")
         if winner_type == 0:
             print("Cleaner agent ",overall_winner_index)
+            self.BothAgent.setText("Overall Winner - Cleaner: "+str(overall_winner_index+1)+str(" (")+str(self.VacuumCleaners[overall_winner_index].x)+str(",") +str(self.VacuumCleaners[overall_winner_index].y)+str(")"))
+
         else:
+            self.BothAgent.setText("Overall Winner - Dirt Agent: "+str(overall_winner_index+1)+str(" (")+str(self.DirtAgents[overall_winner_index].x)+str(",") +str(self.DirtAgents[overall_winner_index].y)+str(")"))
             print("Dirt agent ",overall_winner_index)
 
 

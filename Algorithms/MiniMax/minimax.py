@@ -587,7 +587,7 @@ class MiniMax:
                         else:
                             pass
                     return maxEval,None,dtile
-    def alphabetamulti(self,alpha,beta,maximizing_player,depth,cleaning_agents_tile,cleaning_agent_index,dirt_agents_tile,dirt_agent_index,tiles_array,dirts_array,counts,positions=[]):
+    def alphabetamulti(self,maximizing_player,alpha,beta,depth,cleaning_agents_tile,cleaning_agent_index,dirt_agents_tile,dirt_agent_index,tiles_array,dirts_array,counts,positions=[]):
         # print("Dirts array: ",dirts_array)
         if(depth==0):
             # print("end: ",self.getScore(cleaning_agent_tile,dirts_array)[0],"  ",(cleaning_agent_tile.x,cleaning_agent_tile.y))
