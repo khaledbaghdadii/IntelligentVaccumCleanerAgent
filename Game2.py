@@ -372,6 +372,8 @@ class Game2:
                     if self.start_btn.rect.collidepoint(x,y):
                         self.setSpeed()
 
+                        #recharge
+                        self.rechargeAllAgents()
                         if len(self.DirtAgents)==0:
                             #single of project 1
                             if len(self.VacuumCleaners)==1:
@@ -674,6 +676,8 @@ class Game2:
                 self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
+                # -10 when dirt agent throws dirt
+                self.DirtAgents[i].battery-=10
              d_copy=  deepcopy(self.Dirts.dirts_array)
              score,t,d_tile=minimax.minimaxmulti(True,self.DirtAgents[i].stepsAhead,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
@@ -692,12 +696,15 @@ class Game2:
                     index=self.Dirts.dirts_array.index((cleaningAgentTile.x,cleaningAgentTile.y))
                     self.Dirts.dirts_array.pop(index)
                     self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
+                    #-10 if cleaner cleans a dirt
+                    self.VacuumCleaners[i].battery-=10
              d_copy=deepcopy(self.Dirts.dirts_array)
              score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
              self.draw()
              pygame.event.pump()
-
+        self.battery.setText("Battery%: "+str(self.VacuumCleaners[self.selected_cleaner_index-1].battery))
+        self.battery2.setText("Battery%: "+str(self.DirtAgents[self.selected_dirt_agent_index-1].battery))
         pass
     def startAllAgentsAlphaBeta(self):
         alpha=-float('inf')
@@ -709,6 +716,7 @@ class Game2:
                 self.Dirts.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.Tiles.addDirtXY(dirtAgentTile.x,dirtAgentTile.y,True)
                 self.DirtAgents[i].dirts_of_agent.append((dirtAgentTile.x,dirtAgentTile.y))
+                self.DirtAgents[i].battery-=10
              d_copy=  deepcopy(self.Dirts.dirts_array)
              score,t,d_tile=minimax.alphabetamulti(True,-float('inf'),float('inf'),5,self.getCleaningAgentsTiles(),0,self.getDirtAgentsTiles(),i,self.Tiles.tiles,d_copy,self.counts)
              self.DirtAgents[i].move(d_tile.x-self.DirtAgents[i].x,d_tile.y-self.DirtAgents[i].y)
@@ -727,12 +735,14 @@ class Game2:
                     index=self.Dirts.dirts_array.index((cleaningAgentTile.x,cleaningAgentTile.y))
                     self.Dirts.dirts_array.pop(index)
                     self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
+                    self.VacuumCleaners[i].battery-=10
              d_copy=deepcopy(self.Dirts.dirts_array)
              score,tile,d_tile=minimax.alphabetamulti(False,-float('inf'),float('inf'),5,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
              self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
              self.draw()
              pygame.event.pump()
-
+        self.battery.setText("Battery%: "+str(self.VacuumCleaners[self.selected_cleaner_index-1].battery))
+        self.battery2.setText("Battery%: "+str(self.DirtAgents[self.selected_dirt_agent_index-1].battery))
         pass
 
     def startAllDirtAgentsRandom(self):
@@ -751,6 +761,7 @@ class Game2:
                         index=self.Dirts.dirts_array.index((cleaningAgentTile.x,cleaningAgentTile.y))
                         self.Dirts.dirts_array.pop(index)
                         self.VacuumCleaners[i].dirts_cleaned.append((cleaningAgentTile.x,cleaningAgentTile.y))
+                        self.VacuumCleaners[i].battery-=10
                 d_copy=deepcopy(self.Dirts.dirts_array)
                 score,tile,d_tile=minimax.minimaxmulti(False,self.VacuumCleaners[i].stepsAhead,self.getCleaningAgentsTiles(),i,self.getDirtAgentsTiles(),0,self.Tiles.tiles,d_copy,self.counts)
                 self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
@@ -773,6 +784,8 @@ class Game2:
          self.VacuumCleaners[i].move(tile.x-self.VacuumCleaners[i].x,tile.y-self.VacuumCleaners[i].y)
          self.draw()
          pygame.event.pump()
+        self.battery.setText("Battery%: "+str(self.VacuumCleaners[self.selected_cleaner_index-1].battery))
+        self.battery2.setText("Battery%: "+str(self.DirtAgents[self.selected_dirt_agent_index-1].battery))
     def getCleaningAgentsTiles(self):
         cleaning_agents_tiles=[]
         for VacuumCleaner in self.VacuumCleaners:
@@ -979,5 +992,12 @@ class Game2:
             self.Dirts.addDirtXY(dirt_agent.x,dirt_agent.y,True)
             self.Tiles.addDirtXY(dirt_agent.x,dirt_agent.y,True)
             self.DirtAgents[i].dirts_of_agent.append((dirt_agent.x,dirt_agent.y))
+            self.DirtAgents[i].battery-=10
         self.counts[i]+=1
         self.DirtAgents[i].move(dx,dy)
+
+    def rechargeAllAgents(self):
+        for i in self.VacuumCleaners:
+            i.battery=1000
+        for i in self.DirtAgents:
+            i.battery=1000

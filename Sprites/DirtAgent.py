@@ -13,6 +13,7 @@ class DirtAgent(pygame.sprite.Sprite):
         self.dirts_of_agent=[]
         self.remaining_uncleaned=0
         self.stepsAhead = 5
+        self.battery=1000
         try:
             self.image = pygame.image.load(self.filepath).convert_alpha()
         except:
@@ -27,6 +28,7 @@ class DirtAgent(pygame.sprite.Sprite):
             self.x += dx
             self.y += dy
             self.rect = self.rect.move(dx * self.TILE_WIDTH, dy * self.TILE_HEIGHT)
+            self.battery-=5
     
     
     def addAgent(self,mouse_x,mouse_y,check,n,m):
