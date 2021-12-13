@@ -8,8 +8,8 @@ class PartiallyObservable:
         # self.prev=[[]]
         self.path=[[]]
         self.agent = None
-        # self.moves=0
-        # self.num_explored=0
+        self.moves=0
+        self.num_explored=0
 
     def clean(self,agentX,agentY):
         radius=1
@@ -21,6 +21,8 @@ class PartiallyObservable:
             lastTile=None
             self.tilesArray[currentAgentX][currentAgentY].isVisited=True
             bfs=PartialBFS(self.tilesArray,currentAgentX,currentAgentY,visibleTiles)
+            self.moves+=bfs.moves
+            self.num_explored+=bfs.num_explored
             bfs.clean()
             dirts = bfs.getDirts()
             for dirt in dirts:
