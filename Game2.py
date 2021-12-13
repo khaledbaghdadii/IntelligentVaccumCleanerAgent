@@ -501,11 +501,13 @@ class Game2:
             self.Tiles=Tiles(n,m)
             self.Dirts=Dirts(n,m)
             self.Walls=Walls(n,m)
+
             for i,V in enumerate(self.VacuumCleaners):
 
                 self.VacuumCleaners[i]= VacuumCleaner(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
             for i,V in enumerate(self.DirtAgents):
                 self.DirtAgents[i]= DirtAgent(self.Tiles.TILE_WIDTH,self.Tiles.TILE_HEIGHT)
+            self.resetGrid()
             self.draw()
         except:
             self.input_txt=InputBox(200,650,80,30)
