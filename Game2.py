@@ -399,12 +399,12 @@ class Game2:
                                 for i in range(self.iteration_number):
                                     #self.startAllAgentsMiniMax()
                                     self.startAllAgentsMiniMax()
-                                    self.getEvaluationScores()
+                                self.getEvaluationScores()
                             elif self.multialgo_dropdown.main=="Alpha-Beta":
                                 for i in range(self.iteration_number):
                                     #self.startAllAgentsMiniMax()
                                     self.startAllAgentsAlphaBeta()
-                                    self.getEvaluationScores()
+                                self.getEvaluationScores()
                             elif self.multialgo_dropdown.main=="Random":
                                 pass
                                 # for i in range(30):
@@ -415,11 +415,11 @@ class Game2:
                                 for i in range(self.iteration_number):
                                     #self.startAllAgentsMiniMax()
                                     self.startAllDirtAgentsRandom()
-                                    self.getEvaluationScores()
+                                self.getEvaluationScores()
                             else:
                                 for i in range(self.iteration_number):
                                     self.startAllAgentsMiniMax()
-                                    self.getEvaluationScores()
+                                self.getEvaluationScores()
                         # for i in range(30):
                         #     for i in range(len(self.DirtAgents)):
                         #         self.startSmartDirtAgent1(i)
@@ -739,6 +739,7 @@ class Game2:
                  pygame.event.pump()
         self.battery.setText("Battery%: "+str(self.VacuumCleaners[self.selected_cleaner_index-1].battery))
         self.battery2.setText("Battery%: "+str(self.DirtAgents[self.selected_dirt_agent_index-1].battery))
+
     def getCleaningAgentsTiles(self):
         cleaning_agents_tiles=[]
         for VacuumCleaner in self.VacuumCleaners:
